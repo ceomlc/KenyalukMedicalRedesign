@@ -1,0 +1,287 @@
+Kenyaluk Medical Foundation Website Redesign – Product Design Requirements (PDR)
+1  Executive summary
+
+Kenyaluk Medical Foundation’s existing website (kenyalukmedicalfoundation.org) provides basic information about the organization’s programs, contact details and a portal login. However, the site is dated and has numerous shortcomings: the navigation is cluttered, many calls‑to‑action are buried, it lacks a dedicated events section with payments, and it does not appear to implement modern security or accessibility standards. The foundation’s stakeholders—donors, volunteers, sponsors, beneficiaries and partners—need a streamlined digital experience that inspires trust, communicates impact and makes it easy to act.
+
+This Product Design Requirements (PDR) document leverages the Website Revitalization Proposal prepared by More Life Consulting on 11 Nov 2025 to define a clear scope for rebuilding the site on Replit. It also integrates current best‑practice research for nonprofit websites to ensure the new design delivers measurable results. Key goals include migrating the site to HTTPS, simplifying navigation, creating clear calls‑to‑action, optimizing pages for speed and mobile users, introducing secure donation and event registration flows, and ensuring the entire experience is inclusive and accessible. By following this PDR, the project is expected to increase donations, volunteer engagement and event participation while improving the foundation’s credibility and search visibility.
+
+2  Current site assessment
+2.1 Navigation and content structure
+
+The home page currently displays a long vertical list of sections—images, mission statements, program summaries and various calls‑to‑action. The navigation menu includes numerous links (Home, About Us, Donate, Programs, Events, Medical Mission Fair, Projects, Gallery, Volunteer, Sponsorship and Contact Us). This quantity of links makes it difficult for visitors to find the most important actions quickly. The site also uses a mixture of internal links like “Click Here” rather than descriptive buttons, which can harm accessibility and SEO.
+
+2.2 Visual design
+
+The current design is busy, with large carousels and overlapping images. Colors, typography and spacing are inconsistent; there is limited white space and the site is not optimized for different screen sizes. Calls‑to‑action (e.g., “Donate”) are not prominent at the top of the page and do not use engaging language. There is also no unified style guide or brand definition; different pages appear disjointed.
+
+2.3 Performance, security and accessibility
+
+The existing site is served via HTTP rather than HTTPS (no lock icon), so data transmitted through forms is not encrypted. There may be broken links and unoptimized images that slow down loading. Research on nonprofit web design stresses the importance of fast page loads because more than half of visitors abandon a mobile site that takes longer than three seconds
+wildapricot.com
+. The site does not display accessibility features such as adjustable font sizes, alt text descriptions or high‑contrast options.
+
+2.4 Functionality
+
+Donation process: The current Donate link opens an external third‑party form; the user experience is disconnected and unclear. It lacks preset giving amounts, recurring donation options or simplified form fields.
+
+Events: There is an “Events” link but no dedicated, searchable events page with registration and payment integration.
+
+Volunteer & Sponsorship forms: Sign‑up forms are not clearly visible, and there is no automation to acknowledge submissions.
+
+Portal login: A “Portal Login” link appears without explanation of its purpose.
+
+Impact storytelling: There are few stories or statistics demonstrating how donations and programs change lives. Modern nonprofits should highlight impact stories and metrics to build trust
+wildapricot.com
+.
+
+Overall, the site needs a modern redesign that aligns with best practices: clear mission and value proposition, consistent branding, simple navigation, prominent calls‑to‑action, easy donation and registration forms, and full accessibility
+wildapricot.com
+.
+
+3  Project goals
+
+The redesign has three overarching goals drawn from the More Life Consulting proposal and industry research:
+
+Increase conversions and engagement – by simplifying navigation, creating intuitive user journeys and emphasising clear calls‑to‑action (CTAs). Best practices emphasise placing the primary CTA above the fold and using action‑oriented language
+wildapricot.com
+. The goal is a 15–30 % increase in donations and event sign‑ups, as highlighted in the proposal.
+
+Improve performance, security and accessibility – by migrating to HTTPS, fixing broken links, optimizing images and implementing responsive design. Fast page load speeds and mobile‑friendly layouts are critical because over half of nonprofit website traffic comes from mobile devices
+blog.soloist.ai
+, and slow sites deter users
+wildapricot.com
+. Meeting accessibility guidelines—providing alt text, high contrast, legible fonts, transcripts and an accessibility widget—ensures inclusivity
+morweb.org
+.
+
+Expand functionality and automation – by adding a dedicated events page with secure payment integration (e.g., Stripe), designing a modern donation form with preset amounts and recurring options, and implementing contact and volunteer forms that automatically send confirmation emails. A unified content management system (CMS) or framework should streamline management of programs, blogs and galleries.
+
+4  Scope of work
+
+The project will be carried out in three phases, mirroring the proposal’s cost breakdown and incorporating additional deliverables based on research.
+
+4.1 Phase 1 – Discovery and planning
+
+Stakeholder interviews and content inventory: Meet with Kenyaluk leadership to understand the organization’s mission, audiences, fundraising objectives and brand identity. Inventory existing content, identify gaps and gather assets (images, success stories, reports).
+
+Define personas and user flows: Create personas (e.g., potential donor, volunteer, sponsor, beneficiary) and design user journeys for key actions: donating, registering for an event, signing up to volunteer, learning about programs and contacting the foundation. Each flow should require no more than three clicks to complete
+wildapricot.com
+.
+
+Information architecture & sitemap: Consolidate redundant menu items and restructure navigation into clear categories (e.g., About, Programs, Events, Get Involved, Donate, News/Blog, Contact). Use descriptive labels rather than “Click Here” to improve usability and SEO
+wildapricot.com
+.
+
+Brand style guide: Develop a style guide specifying color palette, typography, imagery style, voice and tone. Research suggests that a consistent brand across pages builds trust and reinforces identity
+wildapricot.com
+. The guide will inform all UI components and marketing collateral.
+
+Wireframes and prototype: Create low‑fidelity wireframes for the homepage, programs page, events page, donation page, volunteer/sponsorship forms and blog. Review with stakeholders and iterate until approved.
+
+4.2 Phase 2 – Development and implementation
+
+Platform setup on Replit: Select an appropriate framework (e.g., Next.js/React or a lightweight static site generator) within Replit’s environment. Configure a version‑controlled repository and ensure continuous deployment to a secure production environment.
+
+Responsive front‑end development: Implement the approved wireframes using responsive design techniques. Follow mobile‑first principles—design for small screens first and scale up—because over half of visitors are on mobile devices
+blog.soloist.ai
+. Use a sticky header to keep navigation and the primary “Donate” button visible
+blog.soloist.ai
+, ensure buttons are at least 44×44 px for easy tapping
+blog.soloist.ai
+ and prioritize content hierarchy.
+
+Optimized visuals and media: Use high‑resolution photos and videos that support the mission but compress them to maintain speed. Research shows that strong imagery grabs attention and communicates messages faster than text
+wildapricot.com
+. Each image must include descriptive alt text and meet contrast guidelines
+morweb.org
+.
+
+Donation system: Build an on‑site donation page with preset amounts, recurring giving options, an “Other Amount” field and minimal required fields
+wildapricot.com
+. Emphasize security by displaying SSL trust badges and integrating digital wallets (Apple Pay, Google Pay, PayPal) to simplify payment
+blog.soloist.ai
+. Link donation amounts to tangible outcomes to motivate giving (e.g., “$25 funds a medical kit for one child”)
+blog.soloist.ai
+. Ensure the payment system is PCI‑DSS compliant
+morweb.org
+.
+
+Events module: Develop a dedicated events page listing upcoming events with dates, descriptions and imagery. Provide filters (e.g., by program or location) and integrate secure registration and payment using Stripe. After registration, automate confirmation emails and calendar invites.
+
+Volunteer and sponsorship forms: Create user‑friendly forms with single‑column layouts, minimal fields and clear validation messages
+wildapricot.com
+. Provide follow‑up emails thanking users and explaining next steps. Offer separate forms for general volunteering, medical missions and sponsorship opportunities with options to choose roles or donation levels.
+
+Programs and impact pages: For each program (Health Advancement, Medical Aid Outreach, Healthcare Professional Empowerment), build a dedicated page detailing objectives, activities, beneficiaries, statistics, stories, photos and videos. Include CTAs like “Support This Program” and “Volunteer.” Consider a “Success Stories” section or a “Testimonials” page to build trust
+morweb.org
+.
+
+Blog/news module: Add a blog to share updates, stories, research and event recaps. Regularly updated blogs improve SEO and establish authority
+wildapricot.com
+. Enable categories and tags for easier navigation.
+
+Portal integration: Define the purpose of the “Portal Login” (e.g., for board members or volunteers) and integrate a secure authentication system. Ensure role‑based access control and encryption for sensitive data.
+
+Accessibility features: Implement alt text, ARIA labels, high‑contrast mode, font size controls, keyboard navigation and transcripts. Provide an accessibility widget that allows users to adjust font size, convert colors to greyscale, highlight links and change font type
+morweb.org
+.
+
+SEO optimization: Structure HTML with semantic tags, optimize page titles and meta descriptions, use descriptive internal links
+wildapricot.com
+ and generate an XML sitemap. Implement Open Graph tags for social sharing. Use schema.org metadata for events and organization.
+
+Analytics and tracking: Integrate Google Analytics or another privacy‑respecting analytics tool. Define conversion funnels for donations, event registrations and volunteer sign‑ups. Configure event tracking to measure CTA clicks.
+
+Performance and testing: Compress images, minify CSS/JS, enable caching and use lazy loading for media. Test across browsers (Chrome, Safari, Firefox, Edge) and devices (desktop, tablet, mobile). Perform accessibility audits using tools like WAVE or Lighthouse. Load‑test forms and payment flows.
+
+4.3 Phase 3 – Deployment and support
+
+Quality assurance and approvals: Conduct user testing with a sample of donors and volunteers. Ensure flows are intuitive and accessible. Address feedback and fix bugs.
+
+Content migration and launch: Import existing content and new stories into the CMS. Migrate the DNS to the new Replit site and obtain an SSL certificate to enable HTTPS. Include appropriate 301 redirects from old URLs.
+
+Post‑launch support (30 days): Monitor analytics, fix emerging issues, and optimize the site based on user behavior. Provide training sessions for staff on using the CMS and managing events and blogs.
+
+5  Functional requirements
+Component	Requirement	Rationale
+Home page	Showcase a clear mission statement, a concise value proposition, primary CTAs (“Donate,” “Volunteer,” “Events”), latest news/events and highlights of programs. Use a hero section with a compelling illustration or photo (see included concept image below).	Visitors should immediately understand the organization’s purpose and how to get involved; research notes that every effective nonprofit site must offer a clear mission statement and prominent calls to action
+wildapricot.com
+.
+Navigation	A simplified top navigation with 5–7 labels: About, Programs, Events, Get Involved (donate/volunteer/sponsor), News, Contact. Include a sticky header and a “Donate” button that is consistently visible.	Clean navigation and clear labels improve usability and reduce abandonment; intuitive menus are recommended
+wildapricot.com
+.
+Donation page	On‑site form with preset amounts (e.g., $25, $50, $100, $250), custom amount, recurring option (monthly/annual), minimal mandatory fields (name, email, payment info), support for multiple payment methods (Stripe, PayPal, Apple Pay), secure SSL encryption, PCI‑DSS compliance, impact messaging and thank‑you page/email.	Simplifying the donation process increases completion rates; best practices suggest minimizing form fields and keeping users on the site
+wildapricot.com
+.
+Events module	List upcoming events with date, time, location, description, registration status and fees. Allow users to register multiple people, provide donations/tickets, and pay securely through Stripe. Send automatic confirmation and calendar invites. Include filtering by program and archive past events.	An integrated events page with secure payment meets the proposal’s new‑feature requirement and promotes in‑person engagement.
+Volunteer & Sponsorship forms	Provide separate forms for general volunteering, medical missions and sponsorship. Include fields for contact details, areas of interest, availability and optional donation amounts. Automate confirmation emails and CRM integration.	Clear forms with minimal fields increase sign‑ups
+wildapricot.com
+. Sponsorship requires capturing more details for follow‑up.
+Programs pages	Each program page should describe the initiative, goals, activities, beneficiaries, statistics, stories, photos and videos. Include CTAs like “Support This Program” and “Volunteer.”	Showcasing impact and stories builds trust and motivates support
+wildapricot.com
+.
+Blog/News	Support posts with categories (program updates, success stories, research, events). Allow authorship attribution, publication dates, image uploads and comments (optional). Display latest posts on the homepage.	A blog drives SEO and positions the organization as a thought leader
+wildapricot.com
+.
+Accessibility	Implement alt text for every image, transcripts for videos, keyboard navigation, high‑contrast mode, adjustable font sizes and ARIA labels. Provide an accessibility widget to adjust colors and fonts
+morweb.org
+. Ensure compliance with WCAG 2.1 AA guidelines.	Accessibility expands the audience and can improve search ranking
+morweb.org
+.
+Portal login	Clarify the purpose (e.g., restricted volunteer or board portal). Implement secure authentication with encrypted passwords. Allow admin users to manage content and events.	Ensures authorized access while protecting sensitive data.
+Analytics & SEO	Integrate analytics, set up conversion goals, implement meta tags, structured data (schema), descriptive internal links and alt attributes. Create an XML sitemap and robots.txt file.	Search engine optimization improves discoverability; internal linking and descriptive anchor text help users navigate and search engines rank pages
+wildapricot.com
+.
+Security & compliance	Use HTTPS with an SSL certificate, ensure PCI‑DSS compliance for payments, regular vulnerability scans and updates. Comply with privacy regulations and include a privacy notice.	Protecting donor data is critical; installing an SSL certificate secures the site and signals trust
+morweb.org
+.
+6  User experience (UX) guidelines
+
+Mobile‑first design: Begin with the mobile layout before scaling to larger screens. Simplify navigation and ensure touch targets are large enough; research recommends at least 44×44 px for buttons
+blog.soloist.ai
+. Use a sticky header that keeps the Donate button accessible at all times
+blog.soloist.ai
+.
+
+Content hierarchy: Place the most important information (mission statement, primary CTA) above the fold. Use headings, subheadings and bullet points to break up text
+wildapricot.com
+.
+
+Visual storytelling: Use high‑quality images and videos that support the narrative. Add captions and alt text. Balance media with white space and avoid clutter
+wildapricot.com
+. Consider adding infographics to display impact metrics.
+
+Consistent branding: Follow the style guide for colors, typography and image treatments. Maintain a cohesive look across the homepage, donation page and programs to build trust
+wildapricot.com
+.
+
+Clear CTAs: Limit pages to one or two CTAs to avoid overwhelming users and use persuasive language (“Give Clean Water,” “Join Our Movement”)
+wildapricot.com
+. Place primary CTAs in the navigation and above the fold; highlight them with contrasting colors. Use first‑person language for buttons (“Count Me In!”) to increase click‑through rates
+blog.soloist.ai
+.
+
+Simplified forms: Use single‑column forms, minimize required fields and group related information logically
+wildapricot.com
+. Provide inline validation and clear error messages. Enable autofill and mobile‑friendly inputs (numeric keypad for phone numbers).
+
+Accessibility: Provide adjustable text size, high contrast mode, keyboard navigation and alt descriptions. Avoid embedding text within images. Use legible sans‑serif fonts and ensure sufficient contrast between text and background
+morweb.org
+.
+
+Internal linking: Use descriptive anchor text to link related pages such as program pages to donation forms; avoid generic “click here.” Buttons should be used for important links, especially on mobile devices
+wildapricot.com
+.
+
+Performance optimization: Compress images, enable caching, minify scripts and use lazy loading. A fast site improves user satisfaction and conversion rates; research notes that visitors expect donation processes to be seamless and quick
+wildapricot.com
+.
+
+7  Technical architecture
+7.1 Platform and tools
+
+Replit environment: Use Replit’s workspace as the development, staging and deployment environment. A Git repository will allow version control and collaboration.
+
+Framework: Use a modern JavaScript framework such as Next.js (React) for server‑side rendering and static site generation or SvelteKit for fast performance. Alternatively, a lightweight static site generator like Hugo or 11ty can be chosen if dynamic features are limited.
+
+Styling: Employ a utility‑first CSS framework such as Tailwind CSS for rapid development and consistent styling. Combine it with accessible UI components or design system libraries.
+
+CMS options: For easy content management, integrate an API‑based CMS (e.g., Sanity, Contentful) or Replit’s built‑in storage. This allows non‑developers to update programs, events and blog posts.
+
+Payments: Integrate Stripe for secure donations and event payments. Stripe offers PCI‑DSS compliant processing and supports Apple Pay, Google Pay and other methods. Use the Stripe Checkout or Stripe Payment Links API for quick setup.
+
+Email automation: Use services like SendGrid or Mailchimp to send donation receipts, event confirmations and volunteer follow‑ups. Use webhooks to trigger emails automatically.
+
+Analytics & SEO: Implement Google Analytics 4 or Matomo for tracking. Use SEO plugins or manual meta tag configuration. Generate an XML sitemap and submit it to search engines.
+
+7.2 Security and compliance
+
+HTTPS & SSL: Obtain and install an SSL certificate to serve the site via HTTPS. This encrypts all data and signals to visitors that their information is secure
+morweb.org
+.
+
+PCI‑DSS compliance: Ensure that donation and event payment processing complies with PCI standards. Do not store sensitive card data on the site; use Stripe’s secure tokens
+morweb.org
+.
+
+Data protection: Adhere to privacy regulations by providing a transparent privacy notice and cookie policy. Collect only necessary data and store it securely.
+
+Updates and patching: Keep all dependencies up to date. Use automated dependabot or similar tools to monitor vulnerabilities.
+
+8  Implementation timeline and milestones
+Phase	Duration	Activities	Deliverables	Payment (per proposal)
+Phase 1: Discovery & Planning	Week 1	Stakeholder interviews, content inventory, persona & user flow development, sitemap creation, brand style guide and low‑fidelity wireframes.	Approved sitemap, style guide, wireframes and project plan.	$320 deposit (as specified in proposal).
+Phase 2: Development & Implementation	Weeks 2–3	Front‑end and back‑end development, responsive layout, donation and events modules, forms, CMS integration, accessibility features, SEO setup, content migration to staging.	Functional staging site with all pages and forms; QA test plan.	$380 upon technical & functional completion.
+Phase 3: Deployment & Support	Week 4 plus 30 days post‑launch support	Final QA, performance and accessibility testing, content finalization, domain migration and launch. Provide training and address post‑launch issues.	Live website on kenyalukmedicalfoundation.org; training materials; performance report.	Included in Phase 2 payment; support provided at no extra cost (proposal includes 30‑day support).
+9  Success metrics and ROI
+
+The success of the redesign will be measured using key performance indicators (KPIs) aligned with the project goals:
+
+Conversion rates: Track the percentage of visitors who donate, register for events or sign up to volunteer. Aim for a 15–30 % increase in donations and event registrations (proposal estimate).
+
+Traffic and SEO: Monitor organic traffic growth (target 20 % increase) by measuring search impressions and clicks. Track the ranking of branded and program‑related keywords.
+
+Engagement: Measure average session duration, bounce rate and pages per session. Use blog engagement (comments and shares) as a proxy for interest.
+
+Operational efficiency: Reduce administrative time spent on event management and form processing by 5–10 hours per month through automation.
+
+Accessibility compliance: Use tools like the WAVE Web Accessibility Evaluation Tool to achieve WCAG 2.1 AA scores and monitor error reductions.
+
+Support feedback: Collect feedback from donors, volunteers and staff on ease of use, clarity and satisfaction.
+
+10  Risks and mitigation
+Risk	Impact	Mitigation
+Delays in content delivery	Delays from the client in providing stories, images and copy can postpone the timeline.	Set clear deadlines for content provision during Phase 1. Provide templates and examples to simplify content creation.
+Scope creep	Requests for additional features beyond the defined scope could extend the timeline and increase costs.	Document all requirements in this PDR and obtain sign‑off. Use change‑control procedures for any new requests.
+Technical learning curve	Staff unfamiliar with the new CMS may find it difficult to maintain the site.	Provide training sessions and comprehensive documentation during the support phase. Choose a user‑friendly CMS.
+Payment integration issues	Errors in payment processing could lead to lost donations and registration fees.	Use well‑established payment providers (Stripe, PayPal), conduct thorough testing, and monitor transactions closely.
+Security vulnerabilities	Data breaches could damage donor trust.	Employ HTTPS, PCI‑DSS compliance, secure coding practices and regular vulnerability scans
+morweb.org
+.
+11  Conclusion
+
+This PDR outlines a comprehensive roadmap for redesigning the Kenyaluk Medical Foundation website on Replit. By following the phases and requirements defined herein, the project will deliver a modern, secure, mobile‑friendly and accessible website that communicates the foundation’s mission effectively and drives action. Incorporating best practices—clear CTAs, storytelling, responsive design, optimized donation flows, event registration, and robust security—will provide a measurable return on investment and lay the groundwork for sustained growth in donations, volunteer participation and community impact.
+
+12  Appendix: Concept image
+
+The following illustration concept may be used as inspiration for the homepage hero section. It depicts healthcare professionals compassionately serving children in a rural community and incorporates health‑related symbols. This type of visual can evoke empathy and highlight the foundation’s mission.
