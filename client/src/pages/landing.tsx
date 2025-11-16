@@ -64,17 +64,16 @@ export default function Landing() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </a>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-base md:text-lg font-semibold px-8 backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 min-h-12 md:min-h-14"
-              asChild
-              data-testid="button-learn-more"
-            >
-              <Link href="/about">
-                <a>Learn More</a>
-              </Link>
-            </Button>
+            <Link href="/about">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base md:text-lg font-semibold px-8 backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 min-h-12 md:min-h-14"
+                data-testid="button-learn-more"
+              >
+                Learn More
+              </Button>
+            </Link>
           </div>
           <p className="mt-6 text-white/70 text-sm">
             Trusted by 10,000+ beneficiaries across Kenya
