@@ -26,18 +26,22 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
-    // Initialize theme from localStorage on mount
-    const stored = localStorage.getItem("theme") as Theme;
-    if (stored && (stored === "light" || stored === "dark")) {
-      setTheme(stored);
+    // Initialize theme from localStorage on mount (client-side only)
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem("theme") as Theme;
+      if (stored && (stored === "light" || stored === "dark")) {
+        setTheme(stored);
+      }
     }
   }, []);
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    localStorage.setItem("theme", theme);
+    if (typeof window !== 'undefined') {
+      const root = window.document.documentElement;
+      root.classList.remove("light", "dark");
+      root.classList.add(theme);
+      localStorage.setItem("theme", theme);
+    }
   }, [theme]);
 
   const value = {

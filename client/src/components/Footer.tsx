@@ -26,25 +26,33 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="font-headings font-semibold text-base">Quick Links</h3>
             <nav className="flex flex-col gap-2">
-              <Link href="/programs">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-programs">
-                  Programs
-                </a>
+              <Link 
+                href="/programs" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-programs"
+              >
+                Programs
               </Link>
-              <Link href="/events">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-events">
-                  Events
-                </a>
+              <Link 
+                href="/events" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-events"
+              >
+                Events
               </Link>
-              <Link href="/about">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-about">
-                  About Us
-                </a>
+              <Link 
+                href="/about" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-about"
+              >
+                About Us
               </Link>
-              <Link href="/news">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-news">
-                  News & Stories
-                </a>
+              <Link 
+                href="/news" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-news"
+              >
+                News & Stories
               </Link>
             </nav>
           </div>
@@ -53,25 +61,33 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="font-headings font-semibold text-base">Get Involved</h3>
             <nav className="flex flex-col gap-2">
-              <Link href="/donate">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-donate">
-                  Donate
-                </a>
+              <Link 
+                href="/donate" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-donate"
+              >
+                Donate
               </Link>
-              <Link href="/volunteer">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-volunteer">
-                  Volunteer
-                </a>
+              <Link 
+                href="/volunteer" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-volunteer"
+              >
+                Volunteer
               </Link>
-              <Link href="/sponsor">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-sponsor">
-                  Sponsor
-                </a>
+              <Link 
+                href="/sponsor" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-sponsor"
+              >
+                Sponsor
               </Link>
-              <Link href="/contact">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" data-testid="link-footer-contact">
-                  Contact Us
-                </a>
+              <Link 
+                href="/contact" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors hover-elevate px-2 py-1 rounded-md" 
+                data-testid="link-footer-contact"
+              >
+                Contact Us
               </Link>
             </nav>
           </div>
@@ -107,15 +123,19 @@ export function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>© 2024 Kenyaluk Medical Foundation. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link href="/privacy">
-                <a className="hover:text-foreground transition-colors" data-testid="link-privacy">
-                  Privacy Policy
-                </a>
+              <Link 
+                href="/privacy" 
+                className="hover:text-foreground transition-colors" 
+                data-testid="link-privacy"
+              >
+                Privacy Policy
               </Link>
-              <Link href="/accessibility">
-                <a className="hover:text-foreground transition-colors" data-testid="link-accessibility">
-                  Accessibility
-                </a>
+              <Link 
+                href="/accessibility" 
+                className="hover:text-foreground transition-colors" 
+                data-testid="link-accessibility"
+              >
+                Accessibility
               </Link>
             </div>
           </div>

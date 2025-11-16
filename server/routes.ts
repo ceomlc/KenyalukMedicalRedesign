@@ -17,7 +17,7 @@ import {
   insertVolunteerSubmissionSchema,
   insertContactMessageSchema
 } from "@shared/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, gte, sql } from "drizzle-orm";
 import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -50,8 +50,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const now = new Date();
       const result = await db.select()
         .from(events)
-        .where(eq(events.date, now)) // This is a placeholder - need proper date comparison
-        .orderBy(desc(events.date))
+        .where(and(
+          gte(events.date, now),
+          eq(events.isActive, true)
+        ))
+        .orderBy(events.date)
         .limit(3);
       res.json(result);
     } catch (error) {

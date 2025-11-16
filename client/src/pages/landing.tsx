@@ -124,18 +124,17 @@ export default function Landing() {
                   <p className="text-muted-foreground leading-relaxed mb-4">
                     {program.description}
                   </p>
-                  <Button
-                    variant="ghost"
-                    className="p-0 h-auto font-medium text-primary hover:text-primary/80"
-                    asChild
-                    data-testid={`link-program-${index}`}
-                  >
-                    <Link href="/programs">
-                      <a className="inline-flex items-center">
+                  <Link href="/programs">
+                    <Button
+                      variant="ghost"
+                      className="p-0 h-auto font-medium text-primary hover:text-primary/80"
+                      data-testid={`link-program-${index}`}
+                    >
+                      <span className="inline-flex items-center">
                         Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
-                    </Link>
-                  </Button>
+                      </span>
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
@@ -153,28 +152,26 @@ export default function Landing() {
             Your support helps us provide essential healthcare services to communities that need it most
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="text-base md:text-lg font-semibold px-8 min-h-12 md:min-h-14"
-              asChild
-              data-testid="button-donate-cta"
-            >
-              <Link href="/donate">
-                <a>Donate Now</a>
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-base md:text-lg font-semibold px-8 bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 min-h-12 md:min-h-14"
-              asChild
-              data-testid="button-volunteer-cta"
-            >
-              <Link href="/volunteer">
-                <a>Become a Volunteer</a>
-              </Link>
-            </Button>
+            <Link href="/donate">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="text-base md:text-lg font-semibold px-8 min-h-12 md:min-h-14"
+                data-testid="button-donate-cta"
+              >
+                Donate Now
+              </Button>
+            </Link>
+            <Link href="/volunteer">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base md:text-lg font-semibold px-8 bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 min-h-12 md:min-h-14"
+                data-testid="button-volunteer-cta"
+              >
+                Become a Volunteer
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
