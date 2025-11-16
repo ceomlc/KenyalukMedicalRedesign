@@ -1,0 +1,80 @@
+Vercel v0 templates suitable for the Kenyaluk Medical Foundation redesign
+
+The Kenyaluk Medical Foundation site needs a fresh, mobile‑friendly design that simplifies navigation, highlights the mission and makes it easy to donate or register for events. While Vercel’s v0 platform doesn’t offer a dedicated non‑profit template, several website templates provide reusable layouts and components that can be remixed in Replit to build an engaging, multi‑page site.
+
+Template candidates
+Template	Why it’s a good fit	Key features (with sources)
+Enhanced‑travel‑website	This template is essentially a multi‑section landing page with a dynamic hero area, grid‑based sections and call‑to‑action components. It can be repurposed for the foundation’s home page because it clearly organises content into sections such as featured items, categories and testimonials. These sections mirror the foundation’s needs (program highlights, donation buttons, impact stories) and the travel site’s structure is easy to adapt.	The description notes that the app offers a dynamic hero section, a grid layout for categories and featured items, testimonials and travel tips, and a newsletter subscription form
+v0.app
+. It uses React, Next.js and Framer Motion for smooth animations and is responsive across devices
+v0.app
+. These features align with best practices for non‑profit sites—clear messaging above the fold, multiple sections for programs, and integrated CTAs—and provide a strong starting point for the foundation’s landing page.
+Modern business landing page	A simple, well‑structured landing page that follows a typical small‑business layout: Landing page, Contact, About us, Services and Quote
+v0.app
+. This structure maps nicely to a non‑profit site (Home, Contact, About, Programs, Donate/Volunteer). The template’s minimalist design and clear section hierarchy can help reduce clutter and improve the user journey.	The template description notes that it is a modern landing page with sections for contact, about, services and quotes
+v0.app
+, and that it can be easily changed from its Dutch default text
+v0.app
+. Its straightforward layout simplifies navigation and ensures each section is clearly separated—qualities that the current site lacks.
+Marketing Website	A polished, fully customizable marketing site that can serve as the visual foundation for the redesign. Because the content is “powered by BaseHub”
+v0.app
+, it demonstrates how a headless CMS can feed dynamic content into a Next.js front‑end—exactly the kind of architecture Replit can replicate using its own database or external CMS.	The template is described as “a sleek, modern, and fully customizable template for your next marketing website”
+v0.app
+. Its modern styling and flexible components can be adapted for non‑profit branding, and it can accommodate hero sections, program highlights and calls to action.
+Blog and decentralized library	The foundation plans to share news, success stories and research. This template offers a ready‑made blog and library component with search, categories and social sharing
+v0.app
+. It can provide the blog/news functionality required by the PDR, and its design introduces dark‑mode support and responsive layouts.	The template’s document library lets users browse and search content
+v0.app
+, while the contribute section allows users to submit their own materials
+v0.app
+. It also includes social sharing, responsive design and a dark‑mode toggle
+v0.app
+—features that could be used to enhance the foundation’s news section and encourage community engagement.
+Hero Section with React Bits Floating Lines	A small component rather than a full site, but this minimal hero section uses an animated background to draw attention to a headline and call‑to‑action. It can inspire the hero at the top of the home page, capturing visitors’ interest immediately.	The template is a minimal hero section with a Floating Lines animated background
+v0.app
+. It’s designed for quick landing pages or UI experiments
+v0.app
+ and could be adapted to display the foundation’s mission statement and a prominent “Donate” button.
+A boring agency	Despite its tongue‑in‑cheek name, this template demonstrates a fluid layout with dark radial gradients, scroll animations and 3D elements
+v0.app
+. While the dark theme may not suit a medical charity, the layout and subtle animations could inspire section transitions or interactive elements to make the site feel modern without overwhelming the user.	The template’s features include a fluid layout with dark radial gradients and subtle curves, SVG animated lines, scroll animations and Spline 3D animation
+v0.app
+. These elements offer ideas for adding motion and depth to the foundation’s site in a controlled, accessible way.
+Interactive Modern SaaS Website	This template goes beyond static pages by including project creation tools, a blog, flow visualizations and user authentication
+v0.app
+. While the full feature set is more than the foundation needs, the template offers reusable patterns for interactive components, such as a dynamic background and modular UI pieces built with React, Next.js and Tailwind CSS
+v0.app
+. Components like the dynamic lava lamp background
+v0.app
+ and the integrated blog
+v0.app
+ could be selectively incorporated into the redesign to create an engaging experience.	
+How to remix these templates in Replit
+
+Use the “Enhanced‑travel‑website” template as the base layout: its section‑based design naturally maps to the foundation’s key pages—hero/banner, programs, testimonials (impact stories), volunteer/donate calls to action, and newsletter sign‑up. The responsive Next.js components can be imported into a Replit project and customised with the foundation’s branding, colours and imagery.
+
+Incorporate elements from the “Marketing Website” template to ensure a modern aesthetic and robust content management. Since the template is built with a headless CMS in mind
+v0.app
+, Replit could connect to a database (or an external CMS) to allow non‑technical staff to update programmes, events and blog posts without touching code.
+
+Adapt the section layout from the “Modern business landing page” for pages like About, Programs and Get Involved. Its simple navigation and clear sections (landing/contact/about/services/quote)
+v0.app
+ align with the PDR’s recommendation to streamline the menu and reduce clutter.
+
+Integrate a blog/news component using the “Blog and decentralized library” template. This will provide search functionality, categories and social sharing
+v0.app
+, meeting the requirement to share success stories and updates. The dark‑mode toggle could be kept as an accessibility feature.
+
+Enhance the hero area using the “Hero Section with React Bits Floating Lines”. Replace the demo text with a concise mission statement and a prominent Donate button. The animated background adds visual interest without overwhelming visitors
+v0.app
+.
+
+Borrow subtle animations from “A boring agency” and “Interactive Modern SaaS Website” to bring the site to life. Elements such as scroll‑triggered transitions
+v0.app
+ and modular UI components
+v0.app
+ can make the site feel current while ensuring it remains accessible and performant.
+
+Conclusion
+
+The v0 templates above provide a rich toolkit for rebuilding the Kenyaluk Medical Foundation’s website. By remixing the Enhanced‑travel‑website layout with modern styling from the Marketing Website, clear structure from the Modern business landing page, blog functionality from the Blog and decentralized library template, and dynamic touches from the Hero Section and A boring agency, the team can craft a site that is visually appealing, easy to navigate and optimised for engagement. Each recommended template is built with modern web technologies like React, Next.js and Tailwind CSS, ensuring compatibility with Replit’s environment and the ability to evolve as the foundation grows.
