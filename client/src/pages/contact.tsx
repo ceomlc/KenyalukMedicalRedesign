@@ -94,13 +94,16 @@ export default function Contact() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-primary/5 to-background">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
-          <Mail className="h-16 w-16 text-primary mx-auto mb-6" />
-          <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-primary/10 via-background to-accent/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:radial-gradient(white,transparent_70%)]" />
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative">
+          <div className="inline-block animate-in fade-in zoom-in-95 duration-700">
+            <Mail className="h-16 w-16 text-primary mx-auto mb-6" />
+          </div>
+          <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "150ms" }}>
             Contact Us
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
             Have questions or want to get involved? We'd love to hear from you
           </p>
         </div>
@@ -111,7 +114,7 @@ export default function Contact() {
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Information */}
-            <div className="space-y-8">
+            <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
               <div>
                 <h2 className="font-headings font-semibold text-3xl mb-6">
                   Get In Touch
@@ -186,7 +189,7 @@ export default function Contact() {
             </div>
 
             {/* Contact Form */}
-            <Card>
+            <Card className="animate-in fade-in slide-in-from-right-8 duration-700" style={{ animationDelay: "150ms" }}>
               <CardHeader>
                 <CardTitle className="text-2xl">Send Us a Message</CardTitle>
               </CardHeader>
@@ -199,7 +202,6 @@ export default function Contact() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Your name"
-                      className="h-12"
                       required
                       data-testid="input-name"
                     />
@@ -213,7 +215,6 @@ export default function Contact() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="your.email@example.com"
-                      className="h-12"
                       required
                       data-testid="input-email"
                     />
@@ -226,7 +227,6 @@ export default function Contact() {
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                       placeholder="What is this regarding?"
-                      className="h-12"
                       data-testid="input-subject"
                     />
                   </div>
@@ -247,7 +247,7 @@ export default function Contact() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full text-lg font-semibold min-h-12 md:min-h-14"
+                    className="w-full text-lg font-semibold"
                     disabled={mutation.isPending}
                     data-testid="button-submit"
                   >

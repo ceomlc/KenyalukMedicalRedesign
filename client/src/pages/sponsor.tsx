@@ -136,13 +136,16 @@ export default function Sponsor() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-primary/5 to-background">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
-          <HandHeart className="h-16 w-16 text-primary mx-auto mb-6" />
-          <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-primary/10 via-background to-accent/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:radial-gradient(white,transparent_70%)]" />
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative">
+          <div className="inline-block animate-in fade-in zoom-in-95 duration-700">
+            <HandHeart className="h-16 w-16 text-primary mx-auto mb-6" />
+          </div>
+          <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "150ms" }}>
             Become a Sponsor
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
             Partner with us to create lasting impact through strategic sponsorships that transform healthcare access
           </p>
         </div>
@@ -151,14 +154,15 @@ export default function Sponsor() {
       {/* Sponsorship Tiers */}
       <section className="py-16 md:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <h2 className="font-headings font-semibold text-3xl mb-12 text-center">
+          <h2 className="font-headings font-semibold text-3xl mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
             Sponsorship Opportunities
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {sponsorshipTiers.map((tier, index) => (
               <Card
                 key={index}
-                className="hover-elevate active-elevate-2 transition-all"
+                className="hover-elevate active-elevate-2 transition-all animate-in fade-in slide-in-from-bottom-8 duration-700"
+                style={{ animationDelay: `${index * 150}ms` }}
                 data-testid={`tier-${index}`}
               >
                 <CardContent className="p-8">
@@ -184,9 +188,9 @@ export default function Sponsor() {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16 md:py-20 bg-card">
+      <section className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-2xl mx-auto px-4 md:px-6">
-          <Card>
+          <Card className="animate-in fade-in zoom-in-95 duration-700">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Sponsorship Inquiry</CardTitle>
             </CardHeader>
@@ -199,7 +203,6 @@ export default function Sponsor() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Your organization or name"
-                    className="h-12"
                     required
                     data-testid="input-name"
                   />
@@ -213,7 +216,6 @@ export default function Sponsor() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="contact@example.com"
-                    className="h-12"
                     required
                     data-testid="input-email"
                   />
@@ -227,7 +229,6 @@ export default function Sponsor() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+254 123 456 789"
-                    className="h-12"
                     data-testid="input-phone"
                   />
                 </div>
@@ -246,7 +247,7 @@ export default function Sponsor() {
                       value={formData.donationAmount}
                       onChange={(e) => setFormData({ ...formData, donationAmount: e.target.value })}
                       placeholder="Enter amount"
-                      className="pl-8 h-12"
+                      className="pl-8"
                       data-testid="input-amount"
                     />
                   </div>
@@ -267,7 +268,7 @@ export default function Sponsor() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full text-lg font-semibold min-h-12 md:min-h-14"
+                  className="w-full text-lg font-semibold"
                   disabled={mutation.isPending}
                   data-testid="button-submit"
                 >

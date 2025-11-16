@@ -102,13 +102,16 @@ export default function Volunteer() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-primary/5 to-background">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
-          <Users className="h-16 w-16 text-primary mx-auto mb-6" />
-          <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-accent/10 via-background to-primary/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:radial-gradient(white,transparent_70%)]" />
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative">
+          <div className="inline-block animate-in fade-in zoom-in-95 duration-700">
+            <Users className="h-16 w-16 text-primary mx-auto mb-6" />
+          </div>
+          <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "150ms" }}>
             Volunteer With Us
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
             Join our team of dedicated volunteers making a real difference in healthcare across Kenya
           </p>
         </div>
@@ -117,11 +120,11 @@ export default function Volunteer() {
       {/* Benefits Section */}
       <section className="py-16 md:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <h2 className="font-headings font-semibold text-3xl mb-12 text-center">
+          <h2 className="font-headings font-semibold text-3xl mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
             Why Volunteer?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
+            <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: "100ms" }}>
               <CardContent className="p-6 text-center">
                 <Heart className="h-10 w-10 text-primary mx-auto mb-4" />
                 <h3 className="font-semibold text-lg mb-2">Make an Impact</h3>
@@ -130,7 +133,7 @@ export default function Volunteer() {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: "200ms" }}>
               <CardContent className="p-6 text-center">
                 <Users className="h-10 w-10 text-primary mx-auto mb-4" />
                 <h3 className="font-semibold text-lg mb-2">Build Skills</h3>
@@ -139,7 +142,7 @@ export default function Volunteer() {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: "300ms" }}>
               <CardContent className="p-6 text-center">
                 <Heart className="h-10 w-10 text-primary mx-auto mb-4" />
                 <h3 className="font-semibold text-lg mb-2">Join Community</h3>
@@ -153,9 +156,9 @@ export default function Volunteer() {
       </section>
 
       {/* Application Form */}
-      <section className="py-16 md:py-20 bg-card">
+      <section className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-2xl mx-auto px-4 md:px-6">
-          <Card>
+          <Card className="animate-in fade-in zoom-in-95 duration-700">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Volunteer Application</CardTitle>
             </CardHeader>
@@ -168,7 +171,6 @@ export default function Volunteer() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="John Doe"
-                    className="h-12"
                     required
                     data-testid="input-name"
                   />
@@ -182,7 +184,6 @@ export default function Volunteer() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="john@example.com"
-                    className="h-12"
                     required
                     data-testid="input-email"
                   />
@@ -196,7 +197,6 @@ export default function Volunteer() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+254 123 456 789"
-                    className="h-12"
                     data-testid="input-phone"
                   />
                 </div>
@@ -207,7 +207,7 @@ export default function Volunteer() {
                     value={formData.type}
                     onValueChange={(value) => setFormData({ ...formData, type: value })}
                   >
-                    <SelectTrigger className="h-12" data-testid="select-type">
+                    <SelectTrigger data-testid="select-type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -225,7 +225,6 @@ export default function Volunteer() {
                     value={formData.availability}
                     onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
                     placeholder="e.g., Weekends, Monthly"
-                    className="h-12"
                     data-testid="input-availability"
                   />
                 </div>
@@ -245,7 +244,7 @@ export default function Volunteer() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full text-lg font-semibold min-h-12 md:min-h-14"
+                  className="w-full text-lg font-semibold"
                   disabled={mutation.isPending}
                   data-testid="button-submit"
                 >
