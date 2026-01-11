@@ -115,7 +115,7 @@ export default function Landing() {
         </button>
 
         {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2" role="tablist">
           {heroSlides.map((_, index) => (
             <button
               key={index}
@@ -124,6 +124,9 @@ export default function Landing() {
                 index === currentSlide ? "bg-white w-8" : "bg-white/50"
               }`}
               aria-label={`Go to slide ${index + 1}`}
+              aria-pressed={index === currentSlide}
+              role="tab"
+              aria-selected={index === currentSlide}
               data-testid={`slide-indicator-${index}`}
             />
           ))}
