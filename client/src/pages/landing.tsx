@@ -1,11 +1,33 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, CheckCircle2, Quote, Sparkles, TrendingUp, Shield } from "lucide-react";
-import heroImage from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
+import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, HandHeart, Calendar, Mail, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import heroImage1 from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
+import heroImage2 from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
+import heroImage3 from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
+import heroImage4 from "@assets/generated_images/Healthcare_Professional_Empowerment_program_d2a2e1c9.png";
 
 export default function Landing() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const heroSlides = [
+    { image: heroImage1, alt: "Healthcare workers providing medical care to community members" },
+    { image: heroImage2, alt: "Medical outreach program serving rural communities" },
+    { image: heroImage3, alt: "Health advancement and education program" },
+    { image: heroImage4, alt: "Healthcare professional training and empowerment" },
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+
   const programs = [
     {
       title: "Health Advancement",
@@ -27,176 +49,235 @@ export default function Landing() {
     },
   ];
 
-  const stats = [
-    { value: "10,000+", label: "Lives Impacted", icon: Heart },
-    { value: "50+", label: "Communities Served", icon: Users },
-    { value: "200+", label: "Healthcare Workers Trained", icon: GraduationCap },
-    { value: "15+", label: "Years of Service", icon: TrendingUp },
-  ];
-
-  const testimonials = [
+  const getInvolvedOptions = [
     {
-      name: "Dr. Sarah Kimani",
-      role: "Community Health Director",
-      quote: "The medical training programs have transformed how our team delivers care to rural communities.",
+      title: "Support Our Advocacy",
+      description: "Help us advocate for better healthcare policies and resources in underserved communities.",
+      icon: Heart,
+      link: "/donate",
+      buttonText: "Donate Now",
     },
     {
-      name: "James Ochieng",
-      role: "Community Leader",
-      quote: "Having access to regular health screenings has made a profound difference in our village's wellbeing.",
+      title: "Sign Up As a Sponsor",
+      description: "Partner with us to create lasting impact through strategic sponsorships.",
+      icon: HandHeart,
+      link: "/sponsor",
+      buttonText: "Become a Sponsor",
+    },
+    {
+      title: "Be a Volunteer",
+      description: "Join our team of dedicated volunteers making a real difference in healthcare across Kenya.",
+      icon: Users,
+      link: "/volunteer",
+      buttonText: "Join Us",
     },
   ];
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Animated Background */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Gradient Orbs Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
+      {/* Hero Section with Image Carousel */}
+      <section className="relative min-h-[600px] md:min-h-[700px] lg:min-h-[800px] overflow-hidden">
+        {/* Image Slider */}
+        <div className="absolute inset-0">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <img
+                src={slide.image}
+                alt={slide.alt}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
         </div>
 
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:radial-gradient(ellipse_at_center,white_40%,transparent_75%)]" />
+        {/* Slider Controls */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"
+          aria-label="Previous slide"
+          data-testid="button-prev-slide"
+        >
+          <ChevronLeft className="h-6 w-6 text-white" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"
+          aria-label="Next slide"
+          data-testid="button-next-slide"
+        >
+          <ChevronRight className="h-6 w-6 text-white" />
+        </button>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentSlide ? "bg-white w-8" : "bg-white/50"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+              data-testid={`slide-indicator-${index}`}
+            />
+          ))}
+        </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-32">
-          <div className="text-center space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Transforming Healthcare Across Kenya</span>
-            </div>
-
-            {/* Main Heading - Extra Large */}
-            <h1 className="font-headings font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-none tracking-tight">
-              <span className="block">Make a Difference</span>
-              <span className="block bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">
-                Today
-              </span>
+        <div className="relative z-10 h-full min-h-[600px] md:min-h-[700px] lg:min-h-[800px] flex items-center justify-center">
+          <div className="max-w-4xl mx-auto px-4 md:px-6 text-center text-white">
+            <h2 className="text-lg md:text-xl uppercase tracking-widest mb-4 text-white/80">
+              Welcome to Kenyaluk Medical Foundation
+            </h2>
+            <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 leading-tight">
+              Compassion Knows No Borders
             </h1>
-
-            {/* Subheading */}
-            <p className="max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed">
-              Empowering communities through accessible healthcare, medical education,
-              and professional development.
+            <p className="text-lg md:text-xl lg:text-2xl mb-10 text-white/90 max-w-2xl mx-auto leading-relaxed">
+              Compassion is the universal language that unites us to make a positive impact around the world.
             </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="text-lg px-8 py-6 rounded-full"
+                className="text-lg px-8"
+                asChild
+                data-testid="button-find-out-more"
+              >
+                <Link href="/about">Find Out More</Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
                 asChild
                 data-testid="button-donate-hero"
               >
                 <Link href="/donate">
                   Donate Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <Heart className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-lg px-8 py-6 rounded-full backdrop-blur-sm bg-background/50"
-                asChild
-                data-testid="button-learn-more"
-              >
-                <Link href="/about">Learn More</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Welcome Section */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+          <h2 className="font-headings font-bold text-3xl md:text-4xl lg:text-5xl mb-6 text-primary">
+            Welcome to Kenyaluk Medical Foundation
+          </h2>
+          <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">
+            Welcome to where we believe in the transformative power of healthcare and the strength of unity in action. 
+            We invite you to explore our website to learn more about our initiatives, programs, and partnerships aimed 
+            at creating a healthier and more equitable world. Join us on this journey to make a meaningful difference. 
+            Together, we can build a brighter and healthier future for all.
+          </p>
+        </div>
+      </section>
+
+      {/* Mission Section */}
+      <section className="py-16 md:py-24 bg-muted/50">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <h3 className="text-sm uppercase tracking-widest text-primary font-semibold mb-2">
+                We Are Committed
+              </h3>
+              <h2 className="font-headings font-bold text-3xl md:text-4xl mb-6">
+                Our Mission Statement
+              </h2>
+              <p className="text-lg leading-relaxed text-muted-foreground mb-8">
+                Our mission is clear: to provide quality healthcare and promote well-being in underserved communities 
+                in Kenya. Through collaborative efforts, innovative initiatives, and a strong commitment to equity, 
+                we aim to address pressing healthcare challenges and empower individuals to lead healthier lives.
+              </p>
+              <Button asChild data-testid="button-about-mission">
+                <Link href="/about#mission">
+                  Learn More About Us
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
-
-            {/* Trust Indicator */}
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-4">
-              <Shield className="w-4 h-4" />
-              <span>Trusted by 10,000+ beneficiaries across Kenya</span>
+            <div className="order-1 lg:order-2">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                <img
+                  src={heroImage1}
+                  alt="Healthcare workers serving the community"
+                  className="w-full h-[400px] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-primary/30 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-primary/50 rounded-full animate-pulse" />
-          </div>
+      {/* Start a Change Today CTA */}
+      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+          <h2 className="font-headings font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
+            Start a Change Today!
+          </h2>
+          <p className="text-lg md:text-xl mb-8 opacity-90">
+            Start creating a positive change in the world today.
+          </p>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="text-lg px-8"
+            asChild
+            data-testid="button-view-programs"
+          >
+            <Link href="/programs">
+              Explore Our Programs
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </section>
 
-      {/* Impact Stats Section with Glass Morphism */}
-      <section className="relative py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="relative group animate-in fade-in slide-in-from-bottom-8 duration-700"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="p-8 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover-elevate transition-all">
-                  <stat.icon className="w-8 h-8 text-primary mb-4" />
-                  <div className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm md:text-base text-muted-foreground mt-2">
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Programs Section - Premium Cards */}
-      <section className="py-24 md:py-32 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl">
-              Our Programs
+      {/* Get Involved Section */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h3 className="text-sm uppercase tracking-widest text-primary font-semibold mb-2">
+              You Are Important to Us
+            </h3>
+            <h2 className="font-headings font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
+              Let's Get Started
             </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive healthcare solutions addressing critical needs across Kenya
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Your impact matters: Let's get started on your journey to making a difference together.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {programs.map((program, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {getInvolvedOptions.map((option, index) => (
               <Card
                 key={index}
-                className="group relative overflow-hidden border-0 shadow-lg hover-elevate transition-all duration-500 animate-in fade-in slide-in-from-bottom-8"
-                style={{ animationDelay: `${index * 150}ms` }}
-                data-testid={`program-card-${index}`}
+                className="group hover-elevate transition-all duration-300 border-2 hover:border-primary/30"
+                data-testid={`get-involved-card-${index}`}
               >
-                {/* Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
-                <CardContent className="relative p-8 space-y-6">
-                  {/* Icon */}
-                  <div className="inline-flex p-4 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <program.icon className="w-8 h-8 text-primary" />
+                <CardContent className="p-8 text-center">
+                  <div className="inline-flex p-4 rounded-full bg-primary/10 mb-6 group-hover:bg-primary/20 transition-colors">
+                    <option.icon className="w-8 h-8 text-primary" />
                   </div>
-
-                  {/* Content */}
-                  <div className="space-y-3">
-                    <h3 className="font-headings font-semibold text-2xl md:text-3xl">
-                      {program.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {program.description}
-                    </p>
-                  </div>
-
-                  {/* CTA */}
-                  <Button
-                    variant="ghost"
-                    className="group/btn p-0 h-auto font-semibold text-primary hover:text-primary"
-                    asChild
-                  >
-                    <Link href={program.link}>
-                      Learn More
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                  <h3 className="font-headings font-semibold text-xl md:text-2xl mb-4">
+                    {option.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    {option.description}
+                  </p>
+                  <Button asChild data-testid={`button-${option.buttonText.toLowerCase().replace(/\s/g, '-')}`}>
+                    <Link href={option.link}>
+                      {option.buttonText}
                     </Link>
                   </Button>
                 </CardContent>
@@ -206,91 +287,118 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA Section - Full Width with Gradient */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
-        <div className="absolute inset-0 bg-grid-white/5" />
-
-        <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 lg:px-8 text-center text-primary-foreground">
-          <h2 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6">
-            Every Contribution Counts
-          </h2>
-          <p className="text-lg md:text-xl lg:text-2xl mb-10 opacity-90 max-w-3xl mx-auto leading-relaxed">
-            Join us in transforming healthcare access for underserved communities.
-            Your support makes a lasting impact.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="text-lg px-8 py-6 rounded-full"
-              asChild
-              data-testid="button-donate-cta"
-            >
-              <Link href="/donate">
-                Make a Donation
-                <Heart className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-6 rounded-full bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-              asChild
-              data-testid="button-volunteer-cta"
-            >
-              <Link href="/volunteer">Volunteer With Us</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials - Modern Grid */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl">
-              Impact Stories
+      {/* Programs Preview */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-headings font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
+              Our Programs
             </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground">
-              Hear from those we serve
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Comprehensive healthcare solutions addressing critical needs across Kenya
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {programs.map((program, index) => (
               <Card
                 key={index}
-                className="relative overflow-hidden border-0 shadow-lg hover-elevate transition-all animate-in fade-in slide-in-from-bottom-8"
-                style={{ animationDelay: `${index * 150}ms` }}
-                data-testid={`testimonial-card-${index}`}
+                className="group overflow-hidden hover-elevate transition-all duration-300"
+                data-testid={`program-card-${index}`}
               >
-                <CardContent className="p-8 md:p-10 space-y-6">
-                  {/* Quote Icon */}
-                  <Quote className="w-12 h-12 text-primary/20" />
-
-                  {/* Quote */}
-                  <blockquote className="text-lg md:text-xl leading-relaxed italic">
-                    "{testimonial.quote}"
-                  </blockquote>
-
-                  {/* Attribution */}
-                  <div className="flex items-center gap-4 pt-4 border-t">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-xl font-semibold text-primary">
-                        {testimonial.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-semibold">{testimonial.name}</div>
-                      <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                    </div>
+                <CardContent className="p-8">
+                  <div className="inline-flex p-4 rounded-2xl bg-primary/10 mb-6 group-hover:bg-primary/20 transition-colors">
+                    <program.icon className="w-8 h-8 text-primary" />
                   </div>
+                  <h3 className="font-headings font-semibold text-xl md:text-2xl mb-4">
+                    {program.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    {program.description}
+                  </p>
+                  <Button variant="ghost" className="p-0 h-auto font-semibold text-primary" asChild>
+                    <Link href={program.link}>
+                      Learn More
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events Preview */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
+            <div>
+              <h2 className="font-headings font-bold text-3xl md:text-4xl mb-2">
+                Upcoming Events
+              </h2>
+              <p className="text-muted-foreground">
+                Join us at our upcoming events and workshops
+              </p>
+            </div>
+            <Button variant="outline" asChild data-testid="button-view-all-events">
+              <Link href="/events">
+                View All Events
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
+          <Card className="overflow-hidden">
+            <CardContent className="p-8 md:p-12">
+              <div className="flex flex-col md:flex-row gap-8 items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Calendar className="w-10 h-10 text-primary" />
+                  </div>
+                </div>
+                <div className="flex-grow text-center md:text-left">
+                  <h3 className="font-headings font-semibold text-2xl mb-2">
+                    Medical Mission Fair
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    Join us for our annual medical mission fair featuring health screenings, 
+                    wellness workshops, and community outreach programs.
+                  </p>
+                  <Button asChild data-testid="button-event-register">
+                    <Link href="/events">
+                      Learn More & Register
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Contact CTA */}
+      <section className="py-16 md:py-24 bg-accent text-accent-foreground">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center">
+          <Mail className="w-16 h-16 mx-auto mb-6 opacity-90" />
+          <h2 className="font-headings font-bold text-3xl md:text-4xl mb-4">
+            Reach Out to Us
+          </h2>
+          <p className="text-lg md:text-xl mb-8 opacity-90">
+            Have questions or want to get involved? Let's connect; we're here to help.
+          </p>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="text-lg px-8"
+            asChild
+            data-testid="button-send-message"
+          >
+            <Link href="/contact">
+              Send Us a Message
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </section>
     </div>
