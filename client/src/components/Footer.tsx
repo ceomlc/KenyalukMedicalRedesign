@@ -168,29 +168,29 @@ export function Footer() {
               <h4 className="font-semibold text-sm">Contact</h4>
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <a 
-                    href="mailto:info@kenyalukmedical.org" 
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors break-all" 
-                    data-testid="link-email"
-                  >
-                    info@kenyalukmedical.org
-                  </a>
-                </div>
-                <div className="flex items-start gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <a 
-                    href="tel:+254123456789" 
+                    href="tel:+12404131321" 
                     className="text-xs text-muted-foreground hover:text-foreground transition-colors" 
                     data-testid="link-phone"
                   >
-                    +254 123 456 789
+                    240-413-1321
+                  </a>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <a 
+                    href="mailto:kenyalukmedicalfoundation@gmail.com" 
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors break-all" 
+                    data-testid="link-email"
+                  >
+                    kenyalukmedicalfoundation@gmail.com
                   </a>
                 </div>
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <span className="text-xs text-muted-foreground">
-                    Nairobi, Kenya
+                    2165 New Holland Pike<br />Lancaster, PA 17601
                   </span>
                 </div>
               </div>

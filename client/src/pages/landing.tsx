@@ -241,9 +241,7 @@ export default function Landing() {
                 Our Mission Statement
               </h2>
               <p className="text-lg leading-relaxed text-muted-foreground mb-8">
-                Our mission is clear: to provide quality healthcare and promote well-being in underserved communities 
-                in Kenya. Through collaborative efforts, innovative initiatives, and a strong commitment to equity, 
-                we aim to address pressing healthcare challenges and empower individuals to lead healthier lives.
+                Our mission is clear; to provide quality healthcare and promote well-being in underserved communities in Kenya. Through collaborative efforts, innovative initiatives, and a strong commitment to equity, we aim to address pressing healthcare challenges and empower individuals to lead healthier lives.
               </p>
               <Button asChild data-testid="button-about-mission">
                 <Link href="/about#mission">

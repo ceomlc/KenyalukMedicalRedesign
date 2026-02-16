@@ -108,16 +108,7 @@ export default function About() {
           </h2>
           <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
             <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "100ms" }}>
-              Founded over 15 years ago, Kenyaluk Medical Foundation began with a simple but powerful vision: to bridge the healthcare gap in underserved communities across Kenya.
-            </p>
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "200ms" }}>
-              What started as a small medical outreach program has grown into a comprehensive healthcare initiative, serving over 10,000 individuals annually and training hundreds of healthcare professionals.
-            </p>
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
-              Today, we operate three core programs—Health Advancement, Medical Aid Outreach, and Healthcare Professional Empowerment—each designed to address specific challenges in Kenya's healthcare landscape while creating sustainable, long-term impact.
-            </p>
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "400ms" }}>
-              Our work is made possible by dedicated volunteers, generous donors, and partnerships with local healthcare facilities and community organizations who share our commitment to health equity.
+              We are a 501(C) 3 designated non-profit organization that was formed in 2020. We are a passionate group of individuals driven by a shared commitment to humanitarian values and improving healthcare access. Founded on principles of compassion and dedication, our team comprises healthcare workers, community advocates, and volunteers. Together, we channel our collective expertise and resources to make a tangible and lasting impact on the health and well-being of underserved populations.
             </p>
           </div>
         </div>
@@ -169,7 +160,7 @@ export default function About() {
                   Our Mission
                 </h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">
-                  To provide accessible, quality healthcare services and empower communities through education, outreach, and professional development, creating lasting positive health outcomes across Kenya.
+                  Our mission is clear; to provide quality healthcare and promote well-being in underserved communities in Kenya. Through collaborative efforts, innovative initiatives, and a strong commitment to equity, we aim to address pressing healthcare challenges and empower individuals to lead healthier lives.
                 </p>
               </CardContent>
             </Card>
@@ -187,7 +178,7 @@ export default function About() {
                   Our Vision
                 </h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">
-                  A Kenya where every individual, regardless of location or economic status, has access to quality healthcare and the knowledge to maintain their wellbeing for generations to come.
+                  Our vision is a world where healthcare is a fundamental human right, accessible to all, regardless of circumstances. We envision thriving communities with improved health outcomes, where diseases are prevented and controlled, maternal and child healthcare needs are met, and individuals have the knowledge and resources to lead fulfilling lives. Through our work, we strive to bring this vision to reality.
                 </p>
               </CardContent>
             </Card>

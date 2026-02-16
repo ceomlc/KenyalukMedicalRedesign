@@ -128,16 +128,16 @@ export default function Contact() {
                 <Card>
                   <CardContent className="p-6 flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-6 w-6 text-primary" />
+                      <Phone className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">Email</h3>
+                      <h3 className="font-semibold mb-1">Phone</h3>
                       <a
-                        href="mailto:info@kenyalukmedical.org"
+                        href="tel:+12404131321"
                         className="text-muted-foreground hover:text-primary transition-colors"
-                        data-testid="link-email"
+                        data-testid="link-phone"
                       >
-                        info@kenyalukmedical.org
+                        240-413-1321
                       </a>
                     </div>
                   </CardContent>
@@ -146,16 +146,16 @@ export default function Contact() {
                 <Card>
                   <CardContent className="p-6 flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Phone className="h-6 w-6 text-primary" />
+                      <Mail className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">Phone</h3>
+                      <h3 className="font-semibold mb-1">Email</h3>
                       <a
-                        href="tel:+254123456789"
+                        href="mailto:kenyalukmedicalfoundation@gmail.com"
                         className="text-muted-foreground hover:text-primary transition-colors"
-                        data-testid="link-phone"
+                        data-testid="link-email"
                       >
-                        +254 123 456 789
+                        kenyalukmedicalfoundation@gmail.com
                       </a>
                     </div>
                   </CardContent>
@@ -167,9 +167,9 @@ export default function Contact() {
                       <MapPin className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">Location</h3>
+                      <h3 className="font-semibold mb-1">Address</h3>
                       <p className="text-muted-foreground">
-                        Nairobi, Kenya
+                        2165 New Holland Pike<br />Lancaster, PA 17601
                       </p>
                     </div>
                   </CardContent>

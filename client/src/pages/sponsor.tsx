@@ -228,7 +228,7 @@ export default function Sponsor() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+254 123 456 789"
+                    placeholder="240-413-1321"
                     data-testid="input-phone"
                   />
                 </div>
