@@ -141,15 +141,15 @@ export default function About() {
             </Card>
 
             <Card 
-              className="animate-in fade-in slide-in-from-right-8 duration-700 border-accent/20 hover-elevate transition-all"
+              className="animate-in fade-in slide-in-from-right-8 duration-700 border-primary/20 hover-elevate transition-all"
               style={{ animationDelay: "150ms" }}
               data-testid="card-vision"
             >
               <CardContent className="p-8 md:p-12">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-accent/10 mb-6">
-                  <Eye className="h-7 w-7 text-accent-foreground" />
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-6">
+                  <Eye className="h-7 w-7 text-primary" />
                 </div>
-                <h2 className="font-headings font-semibold text-2xl md:text-3xl mb-4 bg-gradient-to-r from-accent-foreground to-accent-foreground/70 bg-clip-text text-transparent">
+                <h2 className="font-headings font-semibold text-2xl md:text-3xl mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   Our Vision
                 </h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">
