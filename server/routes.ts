@@ -524,6 +524,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Move/rename image to a different folder in Cloudinary
+  app.post("/api/admin/images/move", isAuthenticated, isAdmin, requireCloudinary, async (req, res) => {
+    try {
+      const { publicId, targetFolder } = req.body;
+      if (!publicId) {
+        return res.status(400).json({ message: "publicId is required" });
+      }
+      if (targetFolder === undefined || targetFolder === null) {
+        return res.status(400).json({ message: "targetFolder is required" });
+      }
+
+      const filename = publicId.split("/").pop();
+      const newPublicId = targetFolder ? `${targetFolder}/${filename}` : filename;
+
+      if (publicId === newPublicId) {
+        return res.json({ message: "Image is already in that folder", newPublicId });
+      }
+
+      const result = await cloudinary.uploader.rename(publicId, newPublicId, {
+        overwrite: true,
+      });
+
+      res.json({
+        message: "Image moved successfully",
+        newPublicId: result.public_id,
+        url: result.secure_url,
+      });
+    } catch (error: any) {
+      console.error("Error moving image:", error);
+      if (error.http_code === 409) {
+        res.status(409).json({ message: "An image with that name already exists in the target folder" });
+      } else {
+        res.status(500).json({ message: "Failed to move image", error: error.message });
+      }
+    }
+  });
+
   // Create Cloudinary folder
   app.post("/api/admin/images/folder", isAuthenticated, isAdmin, requireCloudinary, async (req, res) => {
     try {

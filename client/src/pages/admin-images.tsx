@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,18 @@ import {
   CheckCircle,
   AlertCircle,
   Plus,
+  MoveRight,
+  Info,
 } from "lucide-react";
 import { Link } from "wouter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface CloudinaryImage {
   id: string;
@@ -288,10 +298,13 @@ function SectionManager({ section }: { section: (typeof SITE_SECTIONS)[0] }) {
             </div>
           ) : images.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No images uploaded yet.</p>
+              <Info className="h-10 w-10 mx-auto mb-2 opacity-50" />
+              <p className="text-sm font-medium">No images assigned to this section yet.</p>
               <p className="text-xs mt-1">
-                The site will show placeholder images until you upload real photos here.
+                The site is currently showing placeholder images for this section.
+              </p>
+              <p className="text-xs mt-1">
+                Upload images here, or scroll down to "All Cloudinary Images" to assign existing images to this section.
               </p>
             </div>
           ) : (
@@ -417,10 +430,37 @@ function AllImagesSection() {
     },
   });
 
+  const moveMutation = useMutation({
+    mutationFn: async ({ publicId, targetFolder }: { publicId: string; targetFolder: string }) => {
+      const response = await apiRequest("POST", "/api/admin/images/move", { publicId, targetFolder });
+      return response.json();
+    },
+    onSuccess: (_data, variables) => {
+      const sectionLabel = SITE_SECTIONS.find(s => s.folder === variables.targetFolder)?.label || variables.targetFolder;
+      toast({ title: "Image moved", description: `Image assigned to "${sectionLabel}".` });
+      refetchAll();
+      queryClient.invalidateQueries({ queryKey: ["/api/images"] });
+      SITE_SECTIONS.forEach(s => {
+        queryClient.invalidateQueries({ queryKey: ["/api/images/folder", s.folder] });
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Move failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDelete = (publicId: string) => {
     if (window.confirm("Are you sure you want to delete this image? This cannot be undone.")) {
       deleteMutation.mutate(publicId);
     }
+  };
+
+  const handleMove = (publicId: string, targetFolder: string) => {
+    moveMutation.mutate({ publicId, targetFolder });
   };
 
   const images = allImages;
@@ -440,8 +480,7 @@ function AllImagesSection() {
             <div>
               <CardTitle className="text-lg">All Cloudinary Images</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                All images in your Cloudinary account, including those not yet organized into folders.
-                To use images on the site, upload them to the specific sections above.
+                All images in your Cloudinary account. Hover over any unorganized image and use the arrow button to assign it to a site section above.
               </p>
             </div>
           </div>
@@ -472,7 +511,7 @@ function AllImagesSection() {
               {rootImages.length > 0 && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-3">
-                    Unorganized ({rootImages.length} images)
+                    Unorganized ({rootImages.length} images) - Assign these to a section to display them on your site
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {rootImages.map((image) => (
@@ -491,14 +530,45 @@ function AllImagesSection() {
                           loading="lazy"
                         />
                         <div
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
                           style={{ visibility: "visible" }}
                         >
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="secondary"
+                                disabled={moveMutation.isPending}
+                                data-testid={`button-move-${image.id.replace(/\//g, "-")}`}
+                              >
+                                {moveMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <MoveRight className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="center">
+                              <DropdownMenuLabel>Assign to Section</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              {SITE_SECTIONS.map((section) => (
+                                <DropdownMenuItem
+                                  key={section.folder}
+                                  onClick={() => handleMove(image.id, section.folder)}
+                                  data-testid={`menu-move-${section.folder}-${image.id.replace(/\//g, "-")}`}
+                                >
+                                  <FolderOpen className="h-4 w-4 mr-2 flex-shrink-0" />
+                                  {section.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                           <Button
                             size="icon"
                             variant="destructive"
                             onClick={() => handleDelete(image.id)}
                             disabled={deleteMutation.isPending}
+                            data-testid={`button-delete-all-${image.id.replace(/\//g, "-")}`}
                           >
                             {deleteMutation.isPending ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
