@@ -115,7 +115,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/events", isAuthenticated, isAdmin, async (req, res, next) => {
     try {
-      const validated = insertEventSchema.parse(req.body);
+      const body = { ...req.body };
+      if (body.date && typeof body.date === "string") body.date = new Date(body.date);
+      const validated = insertEventSchema.parse(body);
       const result = await db.insert(events)
         .values(validated)
         .returning();
@@ -176,7 +178,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/blog", isAuthenticated, isAdmin, async (req, res, next) => {
     try {
-      const validated = insertBlogPostSchema.parse(req.body);
+      const body = { ...req.body };
+      if (body.publishedAt && typeof body.publishedAt === "string") body.publishedAt = new Date(body.publishedAt);
+      const validated = insertBlogPostSchema.parse(body);
       const result = await db.insert(blogPosts)
         .values(validated)
         .returning();
@@ -556,7 +560,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/events/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const validated = insertEventSchema.partial().parse(req.body);
+      const body = { ...req.body };
+      if (body.date && typeof body.date === "string") body.date = new Date(body.date);
+      const validated = insertEventSchema.partial().parse(body);
       const result = await db.update(events).set({ ...validated }).where(eq(events.id, id)).returning();
       if (result.length === 0) {
         return res.status(404).json({ message: "Event not found" });
@@ -583,7 +589,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/blog/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const validated = insertBlogPostSchema.partial().parse(req.body);
+      const body = { ...req.body };
+      if (body.publishedAt && typeof body.publishedAt === "string") body.publishedAt = new Date(body.publishedAt);
+      const validated = insertBlogPostSchema.partial().parse(body);
       const result = await db.update(blogPosts).set({ ...validated, updatedAt: new Date() }).where(eq(blogPosts.id, id)).returning();
       if (result.length === 0) {
         return res.status(404).json({ message: "Blog post not found" });
