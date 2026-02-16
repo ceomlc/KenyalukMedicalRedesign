@@ -405,13 +405,14 @@ function SectionManager({ section }: { section: SiteSection }) {
                     className="w-full h-32 object-cover"
                     loading="lazy"
                   />
-                  <div
-                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                    style={{ visibility: "visible" }}
-                  >
+                  <div className="p-2 bg-card flex items-center justify-between gap-2">
+                    <p className="text-xs text-muted-foreground truncate flex-1">
+                      {image.id.split("/").pop()}
+                    </p>
                     <Button
-                      size="icon"
+                      size="sm"
                       variant="destructive"
+                      className="flex-shrink-0"
                       onClick={() => handleDelete(image.id)}
                       disabled={deleteMutation.isPending}
                       data-testid={`button-delete-${image.id.replace(/\//g, "-")}`}
@@ -422,11 +423,6 @@ function SectionManager({ section }: { section: SiteSection }) {
                         <Trash2 className="h-4 w-4" />
                       )}
                     </Button>
-                  </div>
-                  <div className="p-2 bg-card">
-                    <p className="text-xs text-muted-foreground truncate">
-                      {image.id.split("/").pop()}
-                    </p>
                   </div>
                 </div>
               ))}
@@ -610,58 +606,55 @@ function AllImagesSection() {
                           className="w-full h-28 object-cover"
                           loading="lazy"
                         />
-                        <div
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
-                          style={{ visibility: "visible" }}
-                        >
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                size="icon"
-                                variant="secondary"
-                                disabled={moveMutation.isPending}
-                                data-testid={`button-move-${image.id.replace(/\//g, "-")}`}
-                              >
-                                {moveMutation.isPending ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <MoveRight className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="center">
-                              <DropdownMenuLabel>Assign to Section</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              {SITE_SECTIONS.map((section) => (
-                                <DropdownMenuItem
-                                  key={section.folder}
-                                  onClick={() => handleMove(image.id, section.folder)}
-                                  data-testid={`menu-move-${section.folder}-${image.id.replace(/\//g, "-")}`}
-                                >
-                                  <FolderOpen className="h-4 w-4 mr-2 flex-shrink-0" />
-                                  {section.label}
-                                </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                          <Button
-                            size="icon"
-                            variant="destructive"
-                            onClick={() => handleDelete(image.id)}
-                            disabled={deleteMutation.isPending}
-                            data-testid={`button-delete-all-${image.id.replace(/\//g, "-")}`}
-                          >
-                            {deleteMutation.isPending ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-                        <div className="p-1.5 bg-card">
-                          <p className="text-xs text-muted-foreground truncate">
+                        <div className="p-1.5 bg-card flex items-center justify-between gap-1">
+                          <p className="text-xs text-muted-foreground truncate flex-1">
                             {image.id.split("/").pop()}
                           </p>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  size="icon"
+                                  variant="secondary"
+                                  disabled={moveMutation.isPending}
+                                  data-testid={`button-move-${image.id.replace(/\//g, "-")}`}
+                                >
+                                  {moveMutation.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <MoveRight className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="center">
+                                <DropdownMenuLabel>Assign to Section</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {SITE_SECTIONS.map((section) => (
+                                  <DropdownMenuItem
+                                    key={section.folder}
+                                    onClick={() => handleMove(image.id, section.folder)}
+                                    data-testid={`menu-move-${section.folder}-${image.id.replace(/\//g, "-")}`}
+                                  >
+                                    <FolderOpen className="h-4 w-4 mr-2 flex-shrink-0" />
+                                    {section.label}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              onClick={() => handleDelete(image.id)}
+                              disabled={deleteMutation.isPending}
+                              data-testid={`button-delete-all-${image.id.replace(/\//g, "-")}`}
+                            >
+                              {deleteMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -689,13 +682,15 @@ function AllImagesSection() {
                           className="w-full h-28 object-cover"
                           loading="lazy"
                         />
-                        <div
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                          style={{ visibility: "visible" }}
-                        >
+                        <div className="p-1.5 bg-card flex items-center justify-between gap-1">
+                          <p className="text-xs text-muted-foreground truncate flex-1">
+                            <span className="text-primary/70">{image.folder}/</span>
+                            {image.id.split("/").pop()}
+                          </p>
                           <Button
                             size="icon"
                             variant="destructive"
+                            className="flex-shrink-0"
                             onClick={() => handleDelete(image.id)}
                             disabled={deleteMutation.isPending}
                           >
@@ -705,12 +700,6 @@ function AllImagesSection() {
                               <Trash2 className="h-4 w-4" />
                             )}
                           </Button>
-                        </div>
-                        <div className="p-1.5 bg-card">
-                          <p className="text-xs text-muted-foreground truncate">
-                            <span className="text-primary/70">{image.folder}/</span>
-                            {image.id.split("/").pop()}
-                          </p>
                         </div>
                       </div>
                     ))}
