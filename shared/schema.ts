@@ -162,10 +162,13 @@ export const volunteerSubmissions = pgTable("volunteer_submissions", {
   name: text("name").notNull(),
   email: varchar("email").notNull(),
   phone: varchar("phone"),
-  type: varchar("type").notNull(), // general, medical_mission, sponsorship
+  address: text("address"),
+  type: varchar("type").notNull(), // fundraising, pr_marketing, office_assistance, volunteer_recruitment, special_events, sponsorship
   interests: text("interests").array(),
   availability: text("availability"),
   message: text("message"),
+  experience: text("experience"),
+  contactPreference: varchar("contact_preference"),
   donationAmount: decimal("donation_amount", { precision: 10, scale: 2 }),
   status: varchar("status").default("new"), // new, contacted, confirmed
   createdAt: timestamp("created_at").defaultNow(),

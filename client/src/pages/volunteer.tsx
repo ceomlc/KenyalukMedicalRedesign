@@ -17,9 +17,12 @@ export default function Volunteer() {
     name: "",
     email: "",
     phone: "",
-    type: "general",
+    address: "",
+    type: "fundraising",
     availability: "",
     message: "",
+    experience: "",
+    contactPreference: "email",
   });
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
@@ -58,7 +61,15 @@ export default function Volunteer() {
     }
 
     mutation.mutate({
-      ...formData,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      address: formData.address || undefined,
+      type: formData.type,
+      availability: formData.availability || undefined,
+      message: formData.message || undefined,
+      experience: formData.experience || undefined,
+      contactPreference: formData.contactPreference || undefined,
       interests: [],
     });
   };
@@ -84,9 +95,12 @@ export default function Volunteer() {
                   name: "",
                   email: "",
                   phone: "",
-                  type: "general",
+                  address: "",
+                  type: "fundraising",
                   availability: "",
                   message: "",
+                  experience: "",
+                  contactPreference: "email",
                 });
               }}
               data-testid="button-submit-another"
@@ -109,10 +123,10 @@ export default function Volunteer() {
             <Users className="h-16 w-16 text-primary mx-auto mb-6" />
           </div>
           <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "150ms" }}>
-            Volunteer With Us
+            Volunteer
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
-            Join our team of dedicated volunteers making a real difference in healthcare across Kenya
+            Join our passionate and dedicated team of volunteers who are at the forefront of our efforts to create a better world. Your time and skills can play a crucial role in our mission's success. Whether you're interested in hands-on work, event coordination, or fundraising, there's a meaningful way for you to contribute.
           </p>
         </div>
       </section>
@@ -190,19 +204,32 @@ export default function Volunteer() {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="address">Address *</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    placeholder="Your mailing address"
+                    required
+                    data-testid="input-address"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Contact Number *</Label>
                   <Input
                     id="phone"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="240-413-1321"
+                    required
                     data-testid="input-phone"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="type">Volunteer Type *</Label>
+                  <Label htmlFor="type">Area of Interest *</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => setFormData({ ...formData, type: value })}
@@ -211,34 +238,65 @@ export default function Volunteer() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="general">General Volunteering</SelectItem>
-                      <SelectItem value="medical_mission">Medical Mission</SelectItem>
-                      <SelectItem value="sponsorship">Sponsorship</SelectItem>
+                      <SelectItem value="fundraising">Fundraising</SelectItem>
+                      <SelectItem value="pr_marketing">PR/Marketing</SelectItem>
+                      <SelectItem value="office_assistance">Office Assistance</SelectItem>
+                      <SelectItem value="volunteer_recruitment">Volunteer Recruitment</SelectItem>
+                      <SelectItem value="special_events">Special Events</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label htmlFor="availability">Availability</Label>
+                  <Label htmlFor="heardAbout">How did you first hear about our program? *</Label>
                   <Input
-                    id="availability"
+                    id="heardAbout"
                     value={formData.availability}
                     onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
-                    placeholder="e.g., Weekends, Monthly"
-                    data-testid="input-availability"
+                    placeholder="e.g., Social media, friend, website..."
+                    data-testid="input-heard-about"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="message">Tell Us About Yourself</Label>
+                  <Label htmlFor="skills">Special skills and other languages spoken *</Label>
                   <Textarea
-                    id="message"
+                    id="skills"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Share your interests, skills, and why you want to volunteer..."
-                    rows={5}
-                    data-testid="textarea-message"
+                    placeholder="Please list any special skills and other languages you speak..."
+                    rows={3}
+                    data-testid="textarea-skills"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="experience">Previous volunteer experience</Label>
+                  <Textarea
+                    id="experience"
+                    value={formData.experience || ""}
+                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                    placeholder="If you have previous volunteer experience, please describe it here..."
+                    rows={3}
+                    data-testid="textarea-experience"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="contactPref">How would you like to receive information from us? *</Label>
+                  <Select
+                    value={formData.contactPreference}
+                    onValueChange={(value) => setFormData({ ...formData, contactPreference: value })}
+                  >
+                    <SelectTrigger data-testid="select-contact-preference">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="phone">Phone</SelectItem>
+                      <SelectItem value="mail">Mail</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <Button

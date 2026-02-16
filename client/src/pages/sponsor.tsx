@@ -143,10 +143,10 @@ export default function Sponsor() {
             <HandHeart className="h-16 w-16 text-primary mx-auto mb-6" />
           </div>
           <h1 className="font-headings font-bold text-4xl md:text-5xl lg:text-6xl mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "150ms" }}>
-            Become a Sponsor
+            Sponsorship
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
-            Partner with us to create lasting impact through strategic sponsorships that transform healthcare access
+            Partner with us to drive impactful change in your community. Our sponsorship opportunities offer businesses and organizations a chance to align with a cause that matters. By supporting our programs and initiatives, you not only enhance your brand's reputation but also contribute to the betterment of society.
           </p>
         </div>
       </section>

@@ -96,6 +96,7 @@ export function Footer() {
                 { label: "Programs", href: "/programs" },
                 { label: "Projects", href: "/projects" },
                 { label: "Events", href: "/events" },
+                { label: "Medical Mission Fair", href: "/medical-mission-fair" },
                 { label: "About Us", href: "/about" },
                 { label: "News & Stories", href: "/news" },
               ].map((link) => (
