@@ -90,7 +90,7 @@ export function Header() {
                 asChild
                 data-testid="link-login"
               >
-                <a href="/api/login">Login</a>
+                <Link href="/login">Login</Link>
               </Button>
             )}
 
@@ -163,7 +163,7 @@ export function Header() {
                 asChild
                 data-testid="link-mobile-login"
               >
-                <a href="/api/login">Login</a>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
               </Button>
             )}
 

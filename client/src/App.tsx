@@ -23,6 +23,8 @@ import Portal from "@/pages/portal";
 import Gallery from "@/pages/gallery";
 import AdminImages from "@/pages/admin-images";
 import Admin from "@/pages/admin";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
 import { useLocation } from "wouter";
 
 function Router() {
@@ -30,38 +32,22 @@ function Router() {
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/about" component={About} />
-          <Route path="/programs" component={Programs} />
-          <Route path="/programs/:slug" component={ProgramDetail} />
-          <Route path="/events" component={Events} />
-          <Route path="/donate" component={Donate} />
-          <Route path="/volunteer" component={Volunteer} />
-          <Route path="/sponsor" component={Sponsor} />
-          <Route path="/news" component={News} />
-          <Route path="/contact" component={Contact} />
-          <Route path="/gallery" component={Gallery} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/about" component={About} />
-          <Route path="/programs" component={Programs} />
-          <Route path="/programs/:slug" component={ProgramDetail} />
-          <Route path="/events" component={Events} />
-          <Route path="/donate" component={Donate} />
-          <Route path="/volunteer" component={Volunteer} />
-          <Route path="/sponsor" component={Sponsor} />
-          <Route path="/news" component={News} />
-          <Route path="/contact" component={Contact} />
-          <Route path="/gallery" component={Gallery} />
-          <Route path="/portal" component={Portal} />
-          <Route path="/admin/images" component={AdminImages} />
-          <Route path="/admin" component={Admin} />
-        </>
-      )}
+      <Route path="/" component={!isLoading && isAuthenticated ? Home : Landing} />
+      <Route path="/about" component={About} />
+      <Route path="/programs" component={Programs} />
+      <Route path="/programs/:slug" component={ProgramDetail} />
+      <Route path="/events" component={Events} />
+      <Route path="/donate" component={Donate} />
+      <Route path="/volunteer" component={Volunteer} />
+      <Route path="/sponsor" component={Sponsor} />
+      <Route path="/news" component={News} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/gallery" component={Gallery} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/portal" component={Portal} />
+      <Route path="/admin/images" component={AdminImages} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

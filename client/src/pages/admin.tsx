@@ -776,7 +776,7 @@ export default function AdminPage() {
         description: "You need to log in to access this page.",
         variant: "destructive",
       });
-      setTimeout(() => { window.location.href = "/api/login"; }, 500);
+      setTimeout(() => { window.location.href = "/login"; }, 500);
     }
   }, [isAuthenticated, isLoading, toast]);
 

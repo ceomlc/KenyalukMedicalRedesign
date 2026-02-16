@@ -5,11 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User, LogOut, Shield, ImageIcon, Settings } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Portal() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -19,10 +21,20 @@ export default function Portal() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        setLocation("/login");
       }, 500);
     }
-  }, [isAuthenticated, isLoading, toast]);
+  }, [isAuthenticated, isLoading, toast, setLocation]);
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("POST", "/api/auth/logout");
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setLocation("/");
+    } catch {
+      toast({ title: "Error", description: "Failed to log out", variant: "destructive" });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -53,13 +65,11 @@ export default function Portal() {
               </div>
               <Button
                 variant="outline"
-                asChild
+                onClick={handleLogout}
                 data-testid="button-logout"
               >
-                <a href="/api/logout" className="inline-flex items-center">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log Out
-                </a>
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
               </Button>
             </div>
           </div>
