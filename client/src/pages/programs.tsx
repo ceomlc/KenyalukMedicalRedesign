@@ -123,16 +123,15 @@ export default function Programs() {
                 data-testid={`program-section-${program.slug}`}
               >
                 <Card className="overflow-hidden border-2 hover-elevate active-elevate-2 transition-all duration-500 group">
-                  <div className={`grid grid-cols-1 lg:grid-cols-5 gap-0 ${index % 2 === 1 ? 'lg:grid-flow-dense' : ''}`}>
+                  <div className={`flex flex-col ${index % 2 === 1 ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}>
                     {/* Image Column */}
-                    <div className={`relative lg:col-span-2 ${index % 2 === 1 ? 'lg:col-start-4' : ''}`}>
-                      <div className="relative aspect-[4/3] lg:aspect-square lg:h-full">
+                    <div className="relative lg:w-2/5 flex-shrink-0">
+                      <div className="relative aspect-[4/3] lg:aspect-auto lg:h-full">
                         <ProgramImage
                           folder={program.cloudinaryFolder}
                           fallback={program.fallbackImage}
                           alt={program.title}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent lg:bg-gradient-to-r lg:from-background/90 lg:to-transparent" />
                         
                         {/* Floating Icon Badge */}
                         <div className="absolute top-6 left-6 lg:top-8 lg:left-8">
@@ -144,7 +143,7 @@ export default function Programs() {
                     </div>
 
                     {/* Content Column */}
-                    <CardContent className={`lg:col-span-3 p-8 md:p-10 lg:p-12 flex flex-col justify-center ${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
+                    <CardContent className="lg:w-3/5 p-8 md:p-10 lg:p-12 flex flex-col justify-center">
                       <h2 className="font-headings font-bold text-3xl md:text-4xl lg:text-5xl mb-4 tracking-tight group-hover:text-primary transition-colors">
                         {program.title}
                       </h2>
