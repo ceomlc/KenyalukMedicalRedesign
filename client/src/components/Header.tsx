@@ -72,15 +72,27 @@ export function Header() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden sm:flex"
-              asChild
-              data-testid="link-portal"
-            >
-              <Link href="/portal">{isAuthenticated ? "Portal" : "Login"}</Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex"
+                asChild
+                data-testid="link-portal"
+              >
+                <Link href="/portal">Portal</Link>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex"
+                asChild
+                data-testid="link-login"
+              >
+                <a href="/api/login">Login</a>
+              </Button>
+            )}
 
             <Button
               variant="default"
@@ -133,16 +145,27 @@ export function Header() {
               </Button>
             ))}
             
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              asChild
-              data-testid="link-mobile-portal"
-            >
-              <Link href="/portal" onClick={() => setMobileMenuOpen(false)}>
-                {isAuthenticated ? "Portal" : "Login"}
-              </Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                asChild
+                data-testid="link-mobile-portal"
+              >
+                <Link href="/portal" onClick={() => setMobileMenuOpen(false)}>
+                  Portal
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                asChild
+                data-testid="link-mobile-login"
+              >
+                <a href="/api/login">Login</a>
+              </Button>
+            )}
 
             <div className="pt-2">
               <Button
