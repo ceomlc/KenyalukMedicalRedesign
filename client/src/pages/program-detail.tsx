@@ -13,7 +13,7 @@ const programsData: Record<string, any> = {
     description: "Empowering communities through comprehensive health education and wellness programs",
     icon: Heart,
     fallbackImage: healthImage,
-    cloudinaryFolder: "programs/health-advancement",
+    cloudinaryFolder: "programs-health-advancement",
     overview: "Our Health Advancement program focuses on preventive healthcare through community education, wellness screenings, and health literacy initiatives. We work directly with communities to provide knowledge and resources for maintaining healthy lifestyles and preventing common diseases.",
     objectives: [
       "Increase health literacy in underserved communities",
@@ -42,7 +42,7 @@ const programsData: Record<string, any> = {
     description: "Bringing essential healthcare services to underserved communities",
     icon: Stethoscope,
     fallbackImage: outreachImage,
-    cloudinaryFolder: "programs/medical-aid-outreach",
+    cloudinaryFolder: "programs-medical-aid-outreach",
     overview: "Our Mobile Medical Outreach program brings healthcare directly to remote and underserved communities that lack access to medical facilities. Through mobile clinics and medical missions, we provide free consultations, essential medications, and coordinate follow-up care.",
     objectives: [
       "Provide accessible healthcare to remote communities",
@@ -71,7 +71,7 @@ const programsData: Record<string, any> = {
     description: "Building capacity through training and mentorship programs",
     icon: GraduationCap,
     fallbackImage: empowermentImage,
-    cloudinaryFolder: "programs/healthcare-professional-empowerment",
+    cloudinaryFolder: "programs-healthcare-professional-empowerment",
     overview: "Our Healthcare Professional Empowerment program strengthens the local healthcare workforce through comprehensive training, mentorship, and professional development opportunities. We invest in healthcare workers to improve the quality and sustainability of healthcare delivery.",
     objectives: [
       "Enhance clinical skills of local healthcare workers",

@@ -12,7 +12,7 @@ const programConfigs = [
   {
     title: "Health Advancement",
     slug: "health-advancement",
-    cloudinaryFolder: "programs/health-advancement",
+    cloudinaryFolder: "programs-health-advancement",
     fallbackImage: healthImage,
     description: "Empowering communities through health education and wellness programs that promote disease prevention and healthy lifestyles.",
     icon: Heart,
@@ -33,7 +33,7 @@ const programConfigs = [
   {
     title: "Medical Aid Outreach",
     slug: "medical-aid-outreach",
-    cloudinaryFolder: "programs/medical-aid-outreach",
+    cloudinaryFolder: "programs-medical-aid-outreach",
     fallbackImage: outreachImage,
     description: "Bringing essential healthcare services directly to underserved communities through mobile medical missions.",
     icon: Stethoscope,
@@ -54,7 +54,7 @@ const programConfigs = [
   {
     title: "Healthcare Professional Empowerment",
     slug: "healthcare-professional-empowerment",
-    cloudinaryFolder: "programs/healthcare-professional-empowerment",
+    cloudinaryFolder: "programs-healthcare-professional-empowerment",
     fallbackImage: empowermentImage,
     description: "Strengthening local healthcare capacity through training, mentorship, and professional development programs.",
     icon: GraduationCap,

@@ -41,17 +41,17 @@ const SITE_SECTIONS = [
     description: "Image displayed in the 'Our Mission' section. Recommended: 800x600px.",
   },
   {
-    folder: "programs/health-advancement",
+    folder: "programs-health-advancement",
     label: "Health Advancement Program",
     description: "Photos for the Health Advancement program page and cards.",
   },
   {
-    folder: "programs/medical-aid-outreach",
+    folder: "programs-medical-aid-outreach",
     label: "Medical Aid Outreach Program",
     description: "Photos for the Medical Aid Outreach program page and cards.",
   },
   {
-    folder: "programs/healthcare-professional-empowerment",
+    folder: "programs-healthcare-professional-empowerment",
     label: "Healthcare Professional Empowerment",
     description: "Photos for the Healthcare Professional Empowerment program page and cards.",
   },
@@ -344,6 +344,255 @@ function SectionManager({ section }: { section: (typeof SITE_SECTIONS)[0] }) {
   );
 }
 
+function AllImagesSection() {
+  const { toast } = useToast();
+  const [expanded, setExpanded] = useState(false);
+  const [allImages, setAllImages] = useState<CloudinaryImage[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
+
+  const {
+    isLoading,
+  } = useQuery<{ images: CloudinaryImage[]; nextCursor: string | null }>({
+    queryKey: ["/api/images"],
+    retry: false,
+    queryFn: async () => {
+      const res = await fetch("/api/images?limit=100", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch images");
+      const data = await res.json();
+      setAllImages(data.images || []);
+      setNextCursor(data.nextCursor || null);
+      setInitialLoaded(true);
+      return data;
+    },
+  });
+
+  const loadMore = async () => {
+    if (!nextCursor || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const res = await fetch(`/api/images?limit=100&cursor=${nextCursor}`, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to load more images");
+      const data = await res.json();
+      setAllImages((prev) => [...prev, ...(data.images || [])]);
+      setNextCursor(data.nextCursor || null);
+    } catch (err) {
+      console.error("Failed to load more images:", err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const refetchAll = async () => {
+    const res = await fetch("/api/images?limit=100", { credentials: "include" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setAllImages(data.images || []);
+    setNextCursor(data.nextCursor || null);
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: async (publicId: string) => {
+      const response = await fetch(`/api/admin/images/${encodeURIComponent(publicId)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Delete failed");
+      }
+    },
+    onSuccess: () => {
+      toast({ title: "Image deleted", description: "The image has been removed." });
+      refetchAll();
+      queryClient.invalidateQueries({ queryKey: ["/api/images"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = (publicId: string) => {
+    if (window.confirm("Are you sure you want to delete this image? This cannot be undone.")) {
+      deleteMutation.mutate(publicId);
+    }
+  };
+
+  const images = allImages;
+  const rootImages = images.filter((img) => !img.folder || img.folder === "");
+  const folderImages = images.filter((img) => img.folder && img.folder !== "");
+
+  return (
+    <Card>
+      <CardHeader
+        className="cursor-pointer hover-elevate"
+        onClick={() => setExpanded(!expanded)}
+        data-testid="button-toggle-all-images"
+      >
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <ImageIcon className="h-5 w-5 text-primary flex-shrink-0" />
+            <div>
+              <CardTitle className="text-lg">All Cloudinary Images</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                All images in your Cloudinary account, including those not yet organized into folders.
+                To use images on the site, upload them to the specific sections above.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">
+              {isLoading ? "..." : `${images.length} image${images.length !== 1 ? "s" : ""}`}
+            </Badge>
+            <span className="text-muted-foreground text-sm">
+              {expanded ? "Collapse" : "Expand"}
+            </span>
+          </div>
+        </div>
+      </CardHeader>
+
+      {expanded && (
+        <CardContent className="space-y-6">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : images.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No images found in your Cloudinary account.</p>
+            </div>
+          ) : (
+            <>
+              {rootImages.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">
+                    Unorganized ({rootImages.length} images)
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {rootImages.map((image) => (
+                      <div
+                        key={image.id}
+                        className="group relative rounded-md overflow-hidden border"
+                        data-testid={`image-card-all-${image.id.replace(/\//g, "-")}`}
+                      >
+                        <img
+                          src={image.url.replace(
+                            "/upload/",
+                            "/upload/c_fill,w_200,h_150,q_auto,f_auto/"
+                          )}
+                          alt={image.alt}
+                          className="w-full h-28 object-cover"
+                          loading="lazy"
+                        />
+                        <div
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          style={{ visibility: "visible" }}
+                        >
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => handleDelete(image.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            {deleteMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                        <div className="p-1.5 bg-card">
+                          <p className="text-xs text-muted-foreground truncate">
+                            {image.id.split("/").pop()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {folderImages.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-3">
+                    In Folders ({folderImages.length} images)
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {folderImages.map((image) => (
+                      <div
+                        key={image.id}
+                        className="group relative rounded-md overflow-hidden border"
+                        data-testid={`image-card-all-${image.id.replace(/\//g, "-")}`}
+                      >
+                        <img
+                          src={image.url.replace(
+                            "/upload/",
+                            "/upload/c_fill,w_200,h_150,q_auto,f_auto/"
+                          )}
+                          alt={image.alt}
+                          className="w-full h-28 object-cover"
+                          loading="lazy"
+                        />
+                        <div
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          style={{ visibility: "visible" }}
+                        >
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => handleDelete(image.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            {deleteMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                        <div className="p-1.5 bg-card">
+                          <p className="text-xs text-muted-foreground truncate">
+                            <span className="text-primary/70">{image.folder}/</span>
+                            {image.id.split("/").pop()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {nextCursor && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={loadMore}
+                    disabled={isLoadingMore}
+                    data-testid="button-load-more-images"
+                  >
+                    {isLoadingMore ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Loading...
+                      </>
+                    ) : (
+                      "Load More Images"
+                    )}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      )}
+    </Card>
+  );
+}
+
 export default function AdminImages() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
@@ -447,6 +696,7 @@ export default function AdminImages() {
             {SITE_SECTIONS.map((section) => (
               <SectionManager key={section.folder} section={section} />
             ))}
+            <AllImagesSection />
           </div>
         </div>
       </section>
