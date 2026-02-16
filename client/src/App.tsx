@@ -23,6 +23,7 @@ import Portal from "@/pages/portal";
 import Gallery from "@/pages/gallery";
 import AdminImages from "@/pages/admin-images";
 import Admin from "@/pages/admin";
+import EventRegister from "@/pages/event-register";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import { useLocation } from "wouter";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/programs" component={Programs} />
       <Route path="/programs/:slug" component={ProgramDetail} />
+      <Route path="/events/:id/register" component={EventRegister} />
       <Route path="/events" component={Events} />
       <Route path="/donate" component={Donate} />
       <Route path="/volunteer" component={Volunteer} />

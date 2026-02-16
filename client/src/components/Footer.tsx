@@ -9,14 +9,36 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+    
+    setIsSubscribing(true);
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Failed to subscribe");
+      }
       toast({
         title: "Subscribed!",
         description: "Thank you for subscribing to our newsletter.",
       });
       setEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to subscribe. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
     }
   };
 
@@ -135,9 +157,10 @@ export function Footer() {
                 type="submit" 
                 size="sm" 
                 className="w-full font-semibold"
+                disabled={isSubscribing}
                 data-testid="button-subscribe"
               >
-                Subscribe
+                {isSubscribing ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>
             

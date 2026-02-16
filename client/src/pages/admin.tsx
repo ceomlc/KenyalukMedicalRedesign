@@ -47,6 +47,8 @@ import {
   Loader2,
   AlertCircle,
   Eye,
+  Mail,
+  ClipboardList,
 } from "lucide-react";
 
 interface AdminStats {
@@ -67,6 +69,8 @@ const NAV_ITEMS = [
   { key: "volunteers", label: "Volunteers", icon: Users },
   { key: "messages", label: "Messages", icon: MessageSquare },
   { key: "users", label: "Users", icon: UserCog },
+  { key: "registrations", label: "Event Registrations", icon: ClipboardList },
+  { key: "newsletter", label: "Newsletter", icon: Mail },
 ];
 
 function DashboardSection() {
@@ -764,6 +768,130 @@ function UsersSection() {
   );
 }
 
+function EventRegistrationsSection() {
+  const { data: registrations = [], isLoading } = useQuery<any[]>({ queryKey: ["/api/admin/event-registrations"] });
+
+  const statusColor = (status: string): "default" | "secondary" | "outline" | "destructive" => {
+    if (status === "confirmed") return "default";
+    if (status === "pending") return "secondary";
+    if (status === "cancelled") return "destructive";
+    return "outline";
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6" data-testid="heading-registrations">Event Registrations</h2>
+      {isLoading ? (
+        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Attendees</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(registrations as any[]).map((r: any) => (
+                <TableRow key={r.id} data-testid={`row-registration-${r.id}`}>
+                  <TableCell className="font-medium">{r.attendeeName}</TableCell>
+                  <TableCell>{r.attendeeEmail}</TableCell>
+                  <TableCell>{r.numberOfAttendees || 1}</TableCell>
+                  <TableCell>{r.totalAmount && r.totalAmount !== "0" ? `$${r.totalAmount}` : "Free"}</TableCell>
+                  <TableCell><Badge variant={statusColor(r.status)}>{r.status}</Badge></TableCell>
+                  <TableCell>{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "-"}</TableCell>
+                </TableRow>
+              ))}
+              {(registrations as any[]).length === 0 && (
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No registrations yet</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function NewsletterSection() {
+  const { toast } = useToast();
+  const { data: subscribers = [], isLoading } = useQuery<any[]>({ queryKey: ["/api/admin/newsletter-subscribers"] });
+
+  const deactivateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/newsletter-subscribers/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/newsletter-subscribers"] });
+      toast({ title: "Subscriber deactivated" });
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const activeSubscribers = (subscribers as any[]).filter((s: any) => s.isActive);
+  const inactiveSubscribers = (subscribers as any[]).filter((s: any) => !s.isActive);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h2 className="text-2xl font-bold" data-testid="heading-newsletter">Newsletter Subscribers</h2>
+        <Badge variant="secondary">{activeSubscribers.length} active</Badge>
+      </div>
+      {isLoading ? (
+        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Email</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Subscribed</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activeSubscribers.map((s: any) => (
+                <TableRow key={s.id} data-testid={`row-subscriber-${s.id}`}>
+                  <TableCell className="font-medium">{s.email}</TableCell>
+                  <TableCell><Badge variant="default">Active</Badge></TableCell>
+                  <TableCell>{s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "-"}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deactivateMutation.mutate(s.id)}
+                      data-testid={`button-deactivate-${s.id}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {inactiveSubscribers.map((s: any) => (
+                <TableRow key={s.id} className="opacity-50" data-testid={`row-subscriber-inactive-${s.id}`}>
+                  <TableCell className="font-medium">{s.email}</TableCell>
+                  <TableCell><Badge variant="outline">Inactive</Badge></TableCell>
+                  <TableCell>{s.createdAt ? new Date(s.createdAt).toLocaleDateString() : "-"}</TableCell>
+                  <TableCell>-</TableCell>
+                </TableRow>
+              ))}
+              {(subscribers as any[]).length === 0 && (
+                <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No subscribers yet</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
@@ -814,6 +942,8 @@ export default function AdminPage() {
       case "volunteers": return <VolunteersSection />;
       case "messages": return <MessagesSection />;
       case "users": return <UsersSection />;
+      case "registrations": return <EventRegistrationsSection />;
+      case "newsletter": return <NewsletterSection />;
       default: return <DashboardSection />;
     }
   };

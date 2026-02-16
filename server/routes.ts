@@ -11,12 +11,15 @@ import {
   donations, 
   volunteerSubmissions, 
   contactMessages,
+  eventRegistrations,
+  newsletterSubscribers,
   insertEventSchema,
   insertBlogPostSchema,
   insertDonationSchema,
   insertVolunteerSubmissionSchema,
   insertContactMessageSchema,
-  eventRegistrations
+  insertEventRegistrationSchema,
+  insertNewsletterSubscriberSchema,
 } from "@shared/schema";
 import { eq, and, desc, gte, sql, count, sum } from "drizzle-orm";
 import Stripe from "stripe";
@@ -240,15 +243,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (event.type === 'payment_intent.succeeded') {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         
-        // Record the donation in the database
-        await db.insert(donations).values({
-          amount: (paymentIntent.amount / 100).toString(),
-          donorName: paymentIntent.metadata.donorName || 'Anonymous',
-          donorEmail: paymentIntent.metadata.donorEmail,
-          isRecurring: paymentIntent.metadata.isRecurring === 'true',
-          status: 'completed',
-          stripePaymentIntentId: paymentIntent.id,
-        });
+        if (paymentIntent.metadata.type === 'event_registration') {
+          const regResults = await db.select().from(eventRegistrations)
+            .where(eq(eventRegistrations.stripePaymentIntentId, paymentIntent.id))
+            .limit(1);
+          
+          if (regResults.length > 0) {
+            const reg = regResults[0];
+            await db.update(eventRegistrations)
+              .set({ status: "confirmed" })
+              .where(eq(eventRegistrations.id, reg.id));
+            
+            await db.update(events)
+              .set({ currentAttendees: sql`COALESCE(current_attendees, 0) + ${reg.numberOfAttendees || 1}` })
+              .where(eq(events.id, reg.eventId));
+          }
+        } else {
+          await db.insert(donations).values({
+            amount: (paymentIntent.amount / 100).toString(),
+            donorName: paymentIntent.metadata.donorName || 'Anonymous',
+            donorEmail: paymentIntent.metadata.donorEmail,
+            isRecurring: paymentIntent.metadata.isRecurring === 'true',
+            status: 'completed',
+            stripePaymentIntentId: paymentIntent.id,
+          });
+        }
       }
 
       res.json({ received: true });
@@ -517,6 +536,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error creating folder:", error);
       res.status(500).json({ message: "Failed to create folder", error: error.message });
+    }
+  });
+
+  // Event Registration
+  app.post("/api/events/:id/register", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { attendeeName, attendeeEmail, numberOfAttendees, requiresPayment } = req.body;
+
+      if (!attendeeName || typeof attendeeName !== "string" || attendeeName.trim().length === 0) {
+        return res.status(400).json({ message: "A valid name is required" });
+      }
+      if (!attendeeEmail || typeof attendeeEmail !== "string" || !attendeeEmail.includes("@")) {
+        return res.status(400).json({ message: "A valid email is required" });
+      }
+
+      const numAttendees = Math.max(1, Math.floor(Number(numberOfAttendees) || 1));
+
+      const [event] = await db.select().from(events).where(eq(events.id, id)).limit(1);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      if (event.maxAttendees) {
+        const currentCount = event.currentAttendees || 0;
+        if (currentCount + numAttendees > event.maxAttendees) {
+          return res.status(400).json({ message: "Not enough spots available for this event" });
+        }
+      }
+
+      const fee = parseFloat(event.registrationFee || "0");
+      const totalAmount = (fee * numAttendees).toFixed(2);
+
+      if (requiresPayment && fee > 0) {
+        const amountInCents = Math.round(parseFloat(totalAmount) * 100);
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: amountInCents,
+          currency: "usd",
+          automatic_payment_methods: { enabled: true },
+          metadata: {
+            eventId: id,
+            attendeeName: attendeeName.trim(),
+            attendeeEmail: attendeeEmail.trim(),
+            numberOfAttendees: numAttendees.toString(),
+            type: "event_registration",
+          },
+        });
+
+        const [registration] = await db.insert(eventRegistrations).values({
+          eventId: id,
+          attendeeName: attendeeName.trim(),
+          attendeeEmail: attendeeEmail.trim(),
+          numberOfAttendees: numAttendees,
+          totalAmount,
+          stripePaymentIntentId: paymentIntent.id,
+          status: "pending",
+        }).returning();
+
+        return res.json({
+          registration,
+          clientSecret: paymentIntent.client_secret,
+        });
+      }
+
+      const [registration] = await db.insert(eventRegistrations).values({
+        eventId: id,
+        attendeeName: attendeeName.trim(),
+        attendeeEmail: attendeeEmail.trim(),
+        numberOfAttendees: numAttendees,
+        totalAmount: "0",
+        status: "confirmed",
+      }).returning();
+
+      await db.update(events)
+        .set({ currentAttendees: (event.currentAttendees || 0) + numAttendees })
+        .where(eq(events.id, id));
+
+      res.status(201).json({ registration });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/events/:id/confirm-registration", async (req, res, next) => {
+    try {
+      const { registrationId, paymentIntentId } = req.body;
+      if (!registrationId || !paymentIntentId) {
+        return res.status(400).json({ message: "Registration ID and payment intent ID are required" });
+      }
+
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.status !== "succeeded") {
+        return res.status(400).json({ message: "Payment has not been completed" });
+      }
+
+      const [reg] = await db.select().from(eventRegistrations)
+        .where(eq(eventRegistrations.id, registrationId))
+        .limit(1);
+
+      if (!reg) {
+        return res.status(404).json({ message: "Registration not found" });
+      }
+
+      if (reg.status === "confirmed") {
+        return res.json({ message: "Already confirmed", registration: reg });
+      }
+
+      await db.update(eventRegistrations)
+        .set({ status: "confirmed" })
+        .where(eq(eventRegistrations.id, registrationId));
+
+      await db.update(events)
+        .set({ currentAttendees: sql`COALESCE(current_attendees, 0) + ${reg.numberOfAttendees || 1}` })
+        .where(eq(events.id, reg.eventId));
+
+      res.json({ message: "Registration confirmed" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/admin/event-registrations", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const result = await db.select().from(eventRegistrations).orderBy(desc(eventRegistrations.createdAt));
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Newsletter Subscriptions
+  app.post("/api/newsletter/subscribe", async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      if (!email || typeof email !== "string" || !email.includes("@")) {
+        return res.status(400).json({ message: "A valid email address is required" });
+      }
+
+      const existing = await db.select().from(newsletterSubscribers).where(eq(newsletterSubscribers.email, email.toLowerCase())).limit(1);
+      if (existing.length > 0) {
+        if (!existing[0].isActive) {
+          await db.update(newsletterSubscribers).set({ isActive: true }).where(eq(newsletterSubscribers.id, existing[0].id));
+        }
+        return res.json({ message: "Subscribed successfully" });
+      }
+
+      await db.insert(newsletterSubscribers).values({ email: email.toLowerCase() });
+      res.status(201).json({ message: "Subscribed successfully" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/admin/newsletter-subscribers", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const result = await db.select().from(newsletterSubscribers).orderBy(desc(newsletterSubscribers.createdAt));
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete("/api/admin/newsletter-subscribers/:id", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await db.update(newsletterSubscribers).set({ isActive: false }).where(eq(newsletterSubscribers.id, id));
+      res.json({ message: "Subscriber deactivated" });
+    } catch (error) {
+      next(error);
     }
   });
 
