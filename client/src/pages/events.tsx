@@ -13,8 +13,17 @@ import { format } from "date-fns";
 export default function Events() {
   const [filterProgram, setFilterProgram] = useState<string>("all");
   
+  const eventsUrl = filterProgram !== "all"
+    ? `/api/events?program=${filterProgram}`
+    : "/api/events";
+
   const { data: events, isLoading } = useQuery<Event[]>({
-    queryKey: ["/api/events", { program: filterProgram !== "all" ? filterProgram : undefined }],
+    queryKey: ["/api/events", filterProgram],
+    queryFn: async () => {
+      const res = await fetch(eventsUrl, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch events");
+      return res.json();
+    },
   });
 
   const programs = [
