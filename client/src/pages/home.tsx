@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { BlogPost, Event } from "@shared/schema";
-import heroImage from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
+import { useCloudinaryImages, heroUrl } from "@/hooks/useCloudinaryImages";
+import heroImageFallback from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
 import { format } from "date-fns";
 
 export default function Home() {
@@ -16,6 +17,13 @@ export default function Home() {
   const { data: upcomingEvents } = useQuery<Event[]>({
     queryKey: ["/api/events/upcoming"],
   });
+
+  const { images: cloudinaryHeroImages, hasImages: hasHeroImages } = useCloudinaryImages({
+    folder: "hero",
+    limit: 1,
+  });
+
+  const heroImage = hasHeroImages ? heroUrl(cloudinaryHeroImages[0].url) : heroImageFallback;
 
   const programs = [
     {

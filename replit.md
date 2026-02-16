@@ -81,6 +81,21 @@ Preferred communication style: Simple, everyday language.
 - **Required Secrets**: `SESSION_SECRET`, `REPL_ID` (auto-provided by Replit)
 - **Optional**: `ISSUER_URL` (defaults to Replit's OIDC endpoint)
 
+### Image Hosting (Cloudinary)
+- **Provider**: Cloudinary SDK (`cloudinary` npm package)
+- **Required Secrets**: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- **API Endpoints**: `/api/images`, `/api/images/folders`, `/api/images/folder/:folder`
+- **Frontend Hook**: `useCloudinaryImages({ folder, limit, tag })` in `client/src/hooks/useCloudinaryImages.ts`
+- **Folder Convention**: Upload images to Cloudinary folders that match site sections:
+  - `hero/` - homepage carousel images
+  - `mission/` - mission section image
+  - `programs/health-advancement/` - Health Advancement program images
+  - `programs/medical-aid-outreach/` - Medical Aid Outreach program images
+  - `programs/healthcare-professional-empowerment/` - Healthcare Professional Empowerment images
+- **Fallback**: All sections fall back to AI-generated placeholder images when Cloudinary folders are empty
+- **Image Optimization**: Automatic via Cloudinary transforms (heroUrl for 1920w, optimizedUrl for 800w, thumbnailUrl for 400x400 fill)
+- **Gallery Page**: `/gallery` with folder navigation, lightbox viewer, and responsive grid
+
 ### Development Tools
 - **Drizzle Kit**: Database schema management and migrations (`npm run db:push`)
 - **Vite Dev Server**: Hot module replacement during development

@@ -2,28 +2,68 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, HandHeart, Calendar, Mail, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useCloudinaryImages, heroUrl, optimizedUrl } from "@/hooks/useCloudinaryImages";
 import heroImage1 from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
 import heroImage2 from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
 import heroImage3 from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
 import heroImage4 from "@assets/generated_images/Healthcare_Professional_Empowerment_program_d2a2e1c9.png";
 
+const fallbackHeroSlides = [
+  { image: heroImage1, alt: "Healthcare workers providing medical care to community members" },
+  { image: heroImage2, alt: "Medical outreach program serving rural communities" },
+  { image: heroImage3, alt: "Health advancement and education program" },
+  { image: heroImage4, alt: "Healthcare professional training and empowerment" },
+];
+
+const fallbackMissionImage = heroImage1;
+
 export default function Landing() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const heroSlides = [
-    { image: heroImage1, alt: "Healthcare workers providing medical care to community members" },
-    { image: heroImage2, alt: "Medical outreach program serving rural communities" },
-    { image: heroImage3, alt: "Health advancement and education program" },
-    { image: heroImage4, alt: "Healthcare professional training and empowerment" },
-  ];
+  const { images: cloudinaryHeroImages, hasImages: hasHeroImages } = useCloudinaryImages({
+    folder: "hero",
+    limit: 10,
+  });
+
+  const { images: cloudinaryMissionImages, hasImages: hasMissionImages } = useCloudinaryImages({
+    folder: "mission",
+    limit: 1,
+  });
+
+  const heroSlides = useMemo(() => {
+    if (hasHeroImages) {
+      return cloudinaryHeroImages.map((img) => ({
+        image: heroUrl(img.url),
+        alt: img.alt || img.caption || "Kenyaluk Medical Foundation",
+      }));
+    }
+    return fallbackHeroSlides;
+  }, [hasHeroImages, cloudinaryHeroImages]);
+
+  const missionImage = useMemo(() => {
+    if (hasMissionImages) {
+      return {
+        src: optimizedUrl(cloudinaryMissionImages[0].url, 800),
+        alt: cloudinaryMissionImages[0].alt || "Healthcare workers serving the community",
+      };
+    }
+    return { src: fallbackMissionImage, alt: "Healthcare workers serving the community" };
+  }, [hasMissionImages, cloudinaryMissionImages]);
 
   useEffect(() => {
+    if (heroSlides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlides.length]);
+
+  useEffect(() => {
+    if (currentSlide >= heroSlides.length) {
+      setCurrentSlide(0);
+    }
+  }, [heroSlides.length, currentSlide]);
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
@@ -97,40 +137,44 @@ export default function Landing() {
         </div>
 
         {/* Slider Controls */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"
-          aria-label="Previous slide"
-          data-testid="button-prev-slide"
-        >
-          <ChevronLeft className="h-6 w-6 text-white" />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"
-          aria-label="Next slide"
-          data-testid="button-next-slide"
-        >
-          <ChevronRight className="h-6 w-6 text-white" />
-        </button>
-
-        {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2" role="tablist">
-          {heroSlides.map((_, index) => (
+        {heroSlides.length > 1 && (
+          <>
             <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentSlide ? "bg-white w-8" : "bg-white/50"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-              aria-pressed={index === currentSlide}
-              role="tab"
-              aria-selected={index === currentSlide}
-              data-testid={`slide-indicator-${index}`}
-            />
-          ))}
-        </div>
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"
+              aria-label="Previous slide"
+              data-testid="button-prev-slide"
+            >
+              <ChevronLeft className="h-6 w-6 text-white" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"
+              aria-label="Next slide"
+              data-testid="button-next-slide"
+            >
+              <ChevronRight className="h-6 w-6 text-white" />
+            </button>
+
+            {/* Slide Indicators */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2" role="tablist">
+              {heroSlides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentSlide ? "bg-white w-8" : "bg-white/50"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                  aria-pressed={index === currentSlide}
+                  role="tab"
+                  aria-selected={index === currentSlide}
+                  data-testid={`slide-indicator-${index}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Hero Content */}
         <div className="relative z-10 h-full min-h-[600px] md:min-h-[700px] lg:min-h-[800px] flex items-center justify-center">
@@ -211,9 +255,10 @@ export default function Landing() {
             <div className="order-1 lg:order-2">
               <div className="relative rounded-2xl overflow-hidden shadow-xl">
                 <img
-                  src={heroImage1}
-                  alt="Healthcare workers serving the community"
+                  src={missionImage.src}
+                  alt={missionImage.alt}
                   className="w-full h-[400px] object-cover"
+                  data-testid="image-mission"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>

@@ -3,74 +3,92 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Stethoscope, GraduationCap, ArrowRight, Users, MapPin, TrendingUp } from "lucide-react";
+import { useCloudinaryImages, optimizedUrl } from "@/hooks/useCloudinaryImages";
 import healthImage from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
 import outreachImage from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
 import empowermentImage from "@assets/generated_images/Healthcare_Professional_Empowerment_program_d2a2e1c9.png";
 
-export default function Programs() {
-  const programs = [
-    {
-      title: "Health Advancement",
-      slug: "health-advancement",
-      description: "Empowering communities through health education and wellness programs that promote disease prevention and healthy lifestyles.",
-      icon: Heart,
-      imageUrl: healthImage,
-      color: "text-pink-600 dark:text-pink-400",
-      bgColor: "bg-pink-50 dark:bg-pink-950/20",
-      highlights: [
-        "Community health education workshops",
-        "Nutrition and disease prevention programs",
-        "Wellness screenings and health assessments",
-        "Health literacy campaigns",
-      ],
-      stats: {
-        beneficiaries: "5,000+",
-        communities: "25+",
-        impact: "40% improvement",
-      },
+const programConfigs = [
+  {
+    title: "Health Advancement",
+    slug: "health-advancement",
+    cloudinaryFolder: "programs/health-advancement",
+    fallbackImage: healthImage,
+    description: "Empowering communities through health education and wellness programs that promote disease prevention and healthy lifestyles.",
+    icon: Heart,
+    color: "text-pink-600 dark:text-pink-400",
+    bgColor: "bg-pink-50 dark:bg-pink-950/20",
+    highlights: [
+      "Community health education workshops",
+      "Nutrition and disease prevention programs",
+      "Wellness screenings and health assessments",
+      "Health literacy campaigns",
+    ],
+    stats: {
+      beneficiaries: "5,000+",
+      communities: "25+",
+      impact: "40% improvement",
     },
-    {
-      title: "Medical Aid Outreach",
-      slug: "medical-aid-outreach",
-      description: "Bringing essential healthcare services directly to underserved communities through mobile medical missions.",
-      icon: Stethoscope,
-      imageUrl: outreachImage,
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-50 dark:bg-blue-950/20",
-      highlights: [
-        "Mobile medical clinics in rural areas",
-        "Free health checkups and consultations",
-        "Essential medication distribution",
-        "Follow-up care coordination",
-      ],
-      stats: {
-        beneficiaries: "3,000+",
-        communities: "15+",
-        impact: "60% access increase",
-      },
+  },
+  {
+    title: "Medical Aid Outreach",
+    slug: "medical-aid-outreach",
+    cloudinaryFolder: "programs/medical-aid-outreach",
+    fallbackImage: outreachImage,
+    description: "Bringing essential healthcare services directly to underserved communities through mobile medical missions.",
+    icon: Stethoscope,
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950/20",
+    highlights: [
+      "Mobile medical clinics in rural areas",
+      "Free health checkups and consultations",
+      "Essential medication distribution",
+      "Follow-up care coordination",
+    ],
+    stats: {
+      beneficiaries: "3,000+",
+      communities: "15+",
+      impact: "60% access increase",
     },
-    {
-      title: "Healthcare Professional Empowerment",
-      slug: "healthcare-professional-empowerment",
-      description: "Strengthening local healthcare capacity through training, mentorship, and professional development programs.",
-      icon: GraduationCap,
-      imageUrl: empowermentImage,
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-50 dark:bg-purple-950/20",
-      highlights: [
-        "Medical skills training workshops",
-        "Mentorship programs for healthcare workers",
-        "Continuing education opportunities",
-        "Best practices sharing and collaboration",
-      ],
-      stats: {
-        beneficiaries: "200+",
-        communities: "10+",
-        impact: "85% skill improvement",
-      },
+  },
+  {
+    title: "Healthcare Professional Empowerment",
+    slug: "healthcare-professional-empowerment",
+    cloudinaryFolder: "programs/healthcare-professional-empowerment",
+    fallbackImage: empowermentImage,
+    description: "Strengthening local healthcare capacity through training, mentorship, and professional development programs.",
+    icon: GraduationCap,
+    color: "text-purple-600 dark:text-purple-400",
+    bgColor: "bg-purple-50 dark:bg-purple-950/20",
+    highlights: [
+      "Medical skills training workshops",
+      "Mentorship programs for healthcare workers",
+      "Continuing education opportunities",
+      "Best practices sharing and collaboration",
+    ],
+    stats: {
+      beneficiaries: "200+",
+      communities: "10+",
+      impact: "85% skill improvement",
     },
-  ];
+  },
+];
 
+function ProgramImage({ folder, fallback, alt }: { folder: string; fallback: string; alt: string }) {
+  const { images, hasImages } = useCloudinaryImages({ folder, limit: 1 });
+  const src = hasImages ? optimizedUrl(images[0].url, 800) : fallback;
+  const imgAlt = hasImages ? (images[0].alt || alt) : alt;
+  return (
+    <img
+      src={src}
+      alt={imgAlt}
+      className="w-full h-full object-cover"
+      data-testid={`image-${folder.replace(/\//g, '-')}`}
+    />
+  );
+}
+
+export default function Programs() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -97,7 +115,7 @@ export default function Programs() {
       <section className="py-16 md:py-20 lg:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="space-y-20 md:space-y-28">
-            {programs.map((program, index) => (
+            {programConfigs.map((program, index) => (
               <div
                 key={index}
                 className="animate-in fade-in slide-in-from-bottom-8 duration-1000"
@@ -109,11 +127,10 @@ export default function Programs() {
                     {/* Image Column */}
                     <div className={`relative lg:col-span-2 ${index % 2 === 1 ? 'lg:col-start-4' : ''}`}>
                       <div className="relative aspect-[4/3] lg:aspect-square lg:h-full">
-                        <img
-                          src={program.imageUrl}
+                        <ProgramImage
+                          folder={program.cloudinaryFolder}
+                          fallback={program.fallbackImage}
                           alt={program.title}
-                          className="w-full h-full object-cover"
-                          data-testid={`image-${program.slug}`}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent lg:bg-gradient-to-r lg:from-background/90 lg:to-transparent" />
                         

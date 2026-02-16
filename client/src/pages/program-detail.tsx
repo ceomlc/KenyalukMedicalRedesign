@@ -2,100 +2,118 @@ import { useRoute, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Stethoscope, GraduationCap, ArrowRight } from "lucide-react";
+import { useCloudinaryImages, heroUrl } from "@/hooks/useCloudinaryImages";
 import healthImage from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
 import outreachImage from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
 import empowermentImage from "@assets/generated_images/Healthcare_Professional_Empowerment_program_d2a2e1c9.png";
 
+const programsData: Record<string, any> = {
+  "health-advancement": {
+    title: "Health Advancement",
+    description: "Empowering communities through comprehensive health education and wellness programs",
+    icon: Heart,
+    fallbackImage: healthImage,
+    cloudinaryFolder: "programs/health-advancement",
+    overview: "Our Health Advancement program focuses on preventive healthcare through community education, wellness screenings, and health literacy initiatives. We work directly with communities to provide knowledge and resources for maintaining healthy lifestyles and preventing common diseases.",
+    objectives: [
+      "Increase health literacy in underserved communities",
+      "Promote disease prevention through education",
+      "Conduct regular wellness screenings and assessments",
+      "Build sustainable health practices in communities",
+    ],
+    activities: [
+      "Community health education workshops on nutrition, hygiene, and disease prevention",
+      "Wellness screenings including blood pressure, diabetes, and general health assessments",
+      "Health literacy campaigns tailored to local needs and cultural contexts",
+      "Partnerships with local health facilities for follow-up care",
+    ],
+    impact: {
+      beneficiaries: "4,500+",
+      communities: "25+",
+      workshops: "150+",
+    },
+    testimonial: {
+      quote: "The health education program has transformed our community's understanding of preventive care. We now have the knowledge to make better health decisions for our families.",
+      author: "Community Health Worker, Nairobi",
+    },
+  },
+  "medical-aid-outreach": {
+    title: "Medical Aid Outreach",
+    description: "Bringing essential healthcare services to underserved communities",
+    icon: Stethoscope,
+    fallbackImage: outreachImage,
+    cloudinaryFolder: "programs/medical-aid-outreach",
+    overview: "Our Mobile Medical Outreach program brings healthcare directly to remote and underserved communities that lack access to medical facilities. Through mobile clinics and medical missions, we provide free consultations, essential medications, and coordinate follow-up care.",
+    objectives: [
+      "Provide accessible healthcare to remote communities",
+      "Deliver essential medical consultations and treatments",
+      "Distribute vital medications to those in need",
+      "Create pathways for ongoing medical support",
+    ],
+    activities: [
+      "Mobile medical clinics visiting rural and underserved areas monthly",
+      "Free health checkups, consultations, and basic treatments",
+      "Distribution of essential medications and medical supplies",
+      "Coordination with local healthcare facilities for complex cases and follow-up care",
+    ],
+    impact: {
+      beneficiaries: "3,800+",
+      communities: "15+",
+      clinics: "200+",
+    },
+    testimonial: {
+      quote: "Before the mobile clinic started visiting our village, we had to travel hours to see a doctor. Now we receive quality healthcare right in our community.",
+      author: "Patient, Rural Kenya",
+    },
+  },
+  "healthcare-professional-empowerment": {
+    title: "Healthcare Professional Empowerment",
+    description: "Building capacity through training and mentorship programs",
+    icon: GraduationCap,
+    fallbackImage: empowermentImage,
+    cloudinaryFolder: "programs/healthcare-professional-empowerment",
+    overview: "Our Healthcare Professional Empowerment program strengthens the local healthcare workforce through comprehensive training, mentorship, and professional development opportunities. We invest in healthcare workers to improve the quality and sustainability of healthcare delivery.",
+    objectives: [
+      "Enhance clinical skills of local healthcare workers",
+      "Provide mentorship and professional development",
+      "Share best practices and latest medical knowledge",
+      "Build sustainable healthcare capacity in communities",
+    ],
+    activities: [
+      "Medical skills training workshops covering latest clinical practices",
+      "One-on-one mentorship programs pairing experienced and emerging healthcare professionals",
+      "Continuing education courses and certifications",
+      "Knowledge sharing sessions and collaborative learning opportunities",
+    ],
+    impact: {
+      trained: "200+",
+      workshops: "50+",
+      partnerships: "10+",
+    },
+    testimonial: {
+      quote: "The mentorship program has enhanced my clinical skills and confidence tremendously. I'm now able to provide better care to my patients.",
+      author: "Clinical Officer, Kisumu",
+    },
+  },
+};
+
+function ProgramHeroImage({ folder, fallback, alt }: { folder: string; fallback: string; alt: string }) {
+  const { images, hasImages } = useCloudinaryImages({ folder, limit: 1 });
+  const src = hasImages ? heroUrl(images[0].url) : fallback;
+  const imgAlt = hasImages ? (images[0].alt || alt) : alt;
+  return (
+    <img
+      src={src}
+      alt={imgAlt}
+      className="w-full h-full object-cover"
+      data-testid={`image-program-hero`}
+    />
+  );
+}
+
 export default function ProgramDetail() {
   const [, params] = useRoute("/programs/:slug");
   const slug = params?.slug;
-
-  const programsData: Record<string, any> = {
-    "health-advancement": {
-      title: "Health Advancement",
-      description: "Empowering communities through comprehensive health education and wellness programs",
-      icon: Heart,
-      imageUrl: healthImage,
-      overview: "Our Health Advancement program focuses on preventive healthcare through community education, wellness screenings, and health literacy initiatives. We work directly with communities to provide knowledge and resources for maintaining healthy lifestyles and preventing common diseases.",
-      objectives: [
-        "Increase health literacy in underserved communities",
-        "Promote disease prevention through education",
-        "Conduct regular wellness screenings and assessments",
-        "Build sustainable health practices in communities",
-      ],
-      activities: [
-        "Community health education workshops on nutrition, hygiene, and disease prevention",
-        "Wellness screenings including blood pressure, diabetes, and general health assessments",
-        "Health literacy campaigns tailored to local needs and cultural contexts",
-        "Partnerships with local health facilities for follow-up care",
-      ],
-      impact: {
-        beneficiaries: "4,500+",
-        communities: "25+",
-        workshops: "150+",
-      },
-      testimonial: {
-        quote: "The health education program has transformed our community's understanding of preventive care. We now have the knowledge to make better health decisions for our families.",
-        author: "Community Health Worker, Nairobi",
-      },
-    },
-    "medical-aid-outreach": {
-      title: "Medical Aid Outreach",
-      description: "Bringing essential healthcare services to underserved communities",
-      icon: Stethoscope,
-      imageUrl: outreachImage,
-      overview: "Our Mobile Medical Outreach program brings healthcare directly to remote and underserved communities that lack access to medical facilities. Through mobile clinics and medical missions, we provide free consultations, essential medications, and coordinate follow-up care.",
-      objectives: [
-        "Provide accessible healthcare to remote communities",
-        "Deliver essential medical consultations and treatments",
-        "Distribute vital medications to those in need",
-        "Create pathways for ongoing medical support",
-      ],
-      activities: [
-        "Mobile medical clinics visiting rural and underserved areas monthly",
-        "Free health checkups, consultations, and basic treatments",
-        "Distribution of essential medications and medical supplies",
-        "Coordination with local healthcare facilities for complex cases and follow-up care",
-      ],
-      impact: {
-        beneficiaries: "3,800+",
-        communities: "15+",
-        clinics: "200+",
-      },
-      testimonial: {
-        quote: "Before the mobile clinic started visiting our village, we had to travel hours to see a doctor. Now we receive quality healthcare right in our community.",
-        author: "Patient, Rural Kenya",
-      },
-    },
-    "healthcare-professional-empowerment": {
-      title: "Healthcare Professional Empowerment",
-      description: "Building capacity through training and mentorship programs",
-      icon: GraduationCap,
-      imageUrl: empowermentImage,
-      overview: "Our Healthcare Professional Empowerment program strengthens the local healthcare workforce through comprehensive training, mentorship, and professional development opportunities. We invest in healthcare workers to improve the quality and sustainability of healthcare delivery.",
-      objectives: [
-        "Enhance clinical skills of local healthcare workers",
-        "Provide mentorship and professional development",
-        "Share best practices and latest medical knowledge",
-        "Build sustainable healthcare capacity in communities",
-      ],
-      activities: [
-        "Medical skills training workshops covering latest clinical practices",
-        "One-on-one mentorship programs pairing experienced and emerging healthcare professionals",
-        "Continuing education courses and certifications",
-        "Knowledge sharing sessions and collaborative learning opportunities",
-      ],
-      impact: {
-        trained: "200+",
-        workshops: "50+",
-        partnerships: "10+",
-      },
-      testimonial: {
-        quote: "The mentorship program has enhanced my clinical skills and confidence tremendously. I'm now able to provide better care to my patients.",
-        author: "Clinical Officer, Kisumu",
-      },
-    },
-  };
 
   const program = slug ? programsData[slug] : null;
 
@@ -105,9 +123,7 @@ export default function ProgramDetail() {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Program Not Found</h1>
           <Button asChild>
-            <Link href="/programs">
-              <a>View All Programs</a>
-            </Link>
+            <Link href="/programs">View All Programs</Link>
           </Button>
         </div>
       </div>
@@ -119,10 +135,10 @@ export default function ProgramDetail() {
       {/* Hero Section */}
       <section className="relative min-h-[400px] md:min-h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src={program.imageUrl}
+          <ProgramHeroImage
+            folder={program.cloudinaryFolder}
+            fallback={program.fallbackImage}
             alt={program.title}
-            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
         </div>
@@ -232,24 +248,18 @@ export default function ProgramDetail() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="text-base md:text-lg font-semibold px-8 min-h-12 md:min-h-14"
               asChild
               data-testid="button-donate"
             >
-              <Link href="/donate">
-                <a>Donate Now</a>
-              </Link>
+              <Link href="/donate">Donate Now</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="text-base md:text-lg font-semibold px-8 min-h-12 md:min-h-14"
               asChild
               data-testid="button-volunteer"
             >
-              <Link href="/volunteer">
-                <a>Volunteer</a>
-              </Link>
+              <Link href="/volunteer">Volunteer</Link>
             </Button>
           </div>
         </div>
