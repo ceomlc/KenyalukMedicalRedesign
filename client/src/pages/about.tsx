@@ -61,21 +61,25 @@ export default function About() {
       icon: Heart,
       title: "Compassion",
       description: "We approach every interaction with empathy and genuine care for the wellbeing of the communities we serve.",
+      color: "primary",
     },
     {
       icon: Target,
       title: "Excellence",
       description: "We are committed to delivering the highest quality healthcare services and training programs.",
+      color: "accent",
     },
     {
       icon: Users,
       title: "Community",
       description: "We believe in empowering local communities to take ownership of their health and wellbeing.",
+      color: "primary",
     },
     {
       icon: Eye,
       title: "Transparency",
       description: "We operate with integrity and accountability, keeping our stakeholders informed every step of the way.",
+      color: "accent",
     },
   ];
 
@@ -182,8 +186,8 @@ export default function About() {
                 data-testid={`value-card-${index}`}
               >
                 <CardContent className="p-6 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                    <value.icon className="h-8 w-8 text-primary" />
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${value.color === 'accent' ? 'bg-accent/10' : 'bg-primary/10'}`}>
+                    <value.icon className={`h-8 w-8 ${value.color === 'accent' ? 'text-accent' : 'text-primary'}`} />
                   </div>
                   <h3 className="font-headings font-semibold text-xl mb-3">
                     {value.title}
