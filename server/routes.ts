@@ -15,9 +15,10 @@ import {
   insertBlogPostSchema,
   insertDonationSchema,
   insertVolunteerSubmissionSchema,
-  insertContactMessageSchema
+  insertContactMessageSchema,
+  eventRegistrations
 } from "@shared/schema";
-import { eq, and, desc, gte, sql } from "drizzle-orm";
+import { eq, and, desc, gte, sql, count, sum } from "drizzle-orm";
 import Stripe from "stripe";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
@@ -59,6 +60,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
+
+  const isAdmin = async (req: any, res: any, next: any) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== "admin" && user.role !== "board_member")) {
+        return res.status(403).json({ message: "Forbidden: Admin access required" });
+      }
+      next();
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  };
   
   // Events API
   app.get("/api/events/upcoming", async (req, res, next) => {
@@ -113,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/events", async (req, res, next) => {
+  app.post("/api/events", isAuthenticated, isAdmin, async (req, res, next) => {
     try {
       const validated = insertEventSchema.parse(req.body);
       const result = await db.insert(events)
@@ -174,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/blog", async (req, res, next) => {
+  app.post("/api/blog", isAuthenticated, isAdmin, async (req, res, next) => {
     try {
       const validated = insertBlogPostSchema.parse(req.body);
       const result = await db.insert(blogPosts)
@@ -435,21 +450,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin middleware - checks if the user is admin or board_member
-  const isAdmin = async (req: any, res: any, next: any) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) return res.status(401).json({ message: "Unauthorized" });
-      const user = await storage.getUser(userId);
-      if (!user || (user.role !== "admin" && user.role !== "board_member")) {
-        return res.status(403).json({ message: "Forbidden: Admin access required" });
-      }
-      next();
-    } catch (error) {
-      res.status(500).json({ message: "Server error" });
-    }
-  };
-
   // Multer setup for file uploads (memory storage)
   const upload = multer({
     storage: multer.memoryStorage(),
@@ -528,6 +528,165 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error creating folder:", error);
       res.status(500).json({ message: "Failed to create folder", error: error.message });
+    }
+  });
+
+  // Admin Dashboard Stats
+  app.get("/api/admin/stats", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const [
+        [donationsCount],
+        [eventsCount],
+        [blogPostsCount],
+        [volunteersCount],
+        [messagesCount],
+        [usersCount],
+        [completedDonations],
+      ] = await Promise.all([
+        db.select({ value: count() }).from(donations),
+        db.select({ value: count() }).from(events),
+        db.select({ value: count() }).from(blogPosts),
+        db.select({ value: count() }).from(volunteerSubmissions),
+        db.select({ value: count() }).from(contactMessages),
+        db.select({ value: count() }).from(users),
+        db.select({ value: sum(donations.amount) }).from(donations).where(eq(donations.status, "completed")),
+      ]);
+
+      res.json({
+        totalDonations: donationsCount.value,
+        totalEvents: eventsCount.value,
+        totalBlogPosts: blogPostsCount.value,
+        totalVolunteers: volunteersCount.value,
+        totalMessages: messagesCount.value,
+        totalUsers: usersCount.value,
+        recentDonationsAmount: completedDonations.value || "0",
+      });
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // Admin Events CRUD
+  app.put("/api/admin/events/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validated = insertEventSchema.partial().parse(req.body);
+      const result = await db.update(events).set({ ...validated }).where(eq(events.id, id)).returning();
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating event:", error);
+      res.status(500).json({ message: "Failed to update event" });
+    }
+  });
+
+  app.delete("/api/admin/events/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await db.delete(events).where(eq(events.id, id));
+      res.json({ message: "Event deleted" });
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res.status(500).json({ message: "Failed to delete event" });
+    }
+  });
+
+  // Admin Blog CRUD
+  app.put("/api/admin/blog/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validated = insertBlogPostSchema.partial().parse(req.body);
+      const result = await db.update(blogPosts).set({ ...validated, updatedAt: new Date() }).where(eq(blogPosts.id, id)).returning();
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating blog post:", error);
+      res.status(500).json({ message: "Failed to update blog post" });
+    }
+  });
+
+  app.delete("/api/admin/blog/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await db.delete(blogPosts).where(eq(blogPosts.id, id));
+      res.json({ message: "Blog post deleted" });
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      res.status(500).json({ message: "Failed to delete blog post" });
+    }
+  });
+
+  // Admin Users
+  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const result = await db.select().from(users).orderBy(desc(users.createdAt));
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.put("/api/admin/users/:id/role", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+      const validRoles = ["user", "volunteer", "admin", "board_member"];
+      if (!validRoles.includes(role)) {
+        return res.status(400).json({ message: `Invalid role. Must be one of: ${validRoles.join(", ")}` });
+      }
+      const result = await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, id)).returning();
+      if (result.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      res.status(500).json({ message: "Failed to update user role" });
+    }
+  });
+
+  // Admin Status Updates for Submissions
+  app.put("/api/admin/volunteer-submissions/:id/status", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const validStatuses = ["new", "contacted", "confirmed"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatuses.join(", ")}` });
+      }
+      const result = await db.update(volunteerSubmissions).set({ status }).where(eq(volunteerSubmissions.id, id)).returning();
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Volunteer submission not found" });
+      }
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating volunteer submission status:", error);
+      res.status(500).json({ message: "Failed to update volunteer submission status" });
+    }
+  });
+
+  app.put("/api/admin/contact-messages/:id/status", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const validStatuses = ["new", "read", "responded"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatuses.join(", ")}` });
+      }
+      const result = await db.update(contactMessages).set({ status }).where(eq(contactMessages.id, id)).returning();
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Contact message not found" });
+      }
+      res.json(result[0]);
+    } catch (error) {
+      console.error("Error updating contact message status:", error);
+      res.status(500).json({ message: "Failed to update contact message status" });
     }
   });
 

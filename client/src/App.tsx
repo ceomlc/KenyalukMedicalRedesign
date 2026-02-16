@@ -22,6 +22,8 @@ import Contact from "@/pages/contact";
 import Portal from "@/pages/portal";
 import Gallery from "@/pages/gallery";
 import AdminImages from "@/pages/admin-images";
+import Admin from "@/pages/admin";
+import { useLocation } from "wouter";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -57,6 +59,7 @@ function Router() {
           <Route path="/gallery" component={Gallery} />
           <Route path="/portal" component={Portal} />
           <Route path="/admin/images" component={AdminImages} />
+          <Route path="/admin" component={Admin} />
         </>
       )}
       <Route component={NotFound} />
@@ -65,17 +68,24 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+  const isAdminPage = location === "/admin";
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">
-              <Router />
-            </main>
-            <Footer />
-          </div>
+          {isAdminPage ? (
+            <Router />
+          ) : (
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main className="flex-1">
+                <Router />
+              </main>
+              <Footer />
+            </div>
+          )}
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>

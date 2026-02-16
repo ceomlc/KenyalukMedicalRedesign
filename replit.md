@@ -100,6 +100,21 @@ Preferred communication style: Simple, everyday language.
   - Admin API: `POST /api/admin/images/upload`, `DELETE /api/admin/images/:publicId`, `POST /api/admin/images/folder`
   - Accessible from Portal Dashboard "Admin Tools" section
 
+### Admin Panel
+- **Full Admin Backend**: `/admin` - comprehensive admin panel with sidebar navigation
+  - Protected by auth + admin/board_member role check
+  - Accessible from Portal Dashboard "Admin Tools" section
+  - **Dashboard**: Stats overview (events, blog posts, donations, volunteers, messages, users)
+  - **Events Management**: Full CRUD - create, edit, delete events
+  - **Blog/News Management**: Full CRUD - create, edit, publish/unpublish, delete posts
+  - **Donations Viewer**: Read-only table of all donations with status badges
+  - **Volunteer Submissions**: View and update status (new → contacted → confirmed)
+  - **Contact Messages**: View and update status (new → read → responded)
+  - **User Management**: View users, change roles (user, volunteer, admin, board_member)
+  - **Image Manager**: Link to `/admin/images` for site photo management
+- Admin API endpoints: `/api/admin/stats`, `/api/admin/events/:id`, `/api/admin/blog/:id`, `/api/admin/users`, `/api/admin/users/:id/role`, `/api/admin/volunteer-submissions/:id/status`, `/api/admin/contact-messages/:id/status`
+- Content creation endpoints (POST /api/events, POST /api/blog) are secured with admin auth
+
 ### Development Tools
 - **Drizzle Kit**: Database schema management and migrations (`npm run db:push`)
 - **Vite Dev Server**: Hot module replacement during development

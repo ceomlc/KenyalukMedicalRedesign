@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, LogOut, Shield, ImageIcon } from "lucide-react";
+import { User, LogOut, Shield, ImageIcon, Settings } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Portal() {
@@ -171,6 +171,13 @@ export default function Portal() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
+                    <Link href="/admin" data-testid="button-admin-panel">
+                      <Settings className="h-5 w-5" />
+                      <span className="font-semibold">Admin Panel</span>
+                      <span className="text-sm text-muted-foreground">Full site management</span>
+                    </Link>
+                  </Button>
                   <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
                     <Link href="/admin/images" data-testid="button-manage-images">
                       <ImageIcon className="h-5 w-5" />
