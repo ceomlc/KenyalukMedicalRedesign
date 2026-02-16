@@ -94,6 +94,7 @@ export function Footer() {
             <nav className="flex flex-col gap-2">
               {[
                 { label: "Programs", href: "/programs" },
+                { label: "Projects", href: "/projects" },
                 { label: "Events", href: "/events" },
                 { label: "About Us", href: "/about" },
                 { label: "News & Stories", href: "/news" },

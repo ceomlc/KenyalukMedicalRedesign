@@ -22,6 +22,7 @@ export function Header() {
   const navItems = [
     { label: "About", path: "/about" },
     { label: "Programs", path: "/programs" },
+    { label: "Projects", path: "/projects" },
     { label: "Events", path: "/events" },
     { label: "Gallery", path: "/gallery" },
     { label: "News", path: "/news" },

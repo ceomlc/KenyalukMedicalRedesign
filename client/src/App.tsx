@@ -21,6 +21,7 @@ import News from "@/pages/news";
 import Contact from "@/pages/contact";
 import Portal from "@/pages/portal";
 import Gallery from "@/pages/gallery";
+import Projects from "@/pages/projects";
 import AdminImages from "@/pages/admin-images";
 import Admin from "@/pages/admin";
 import EventRegister from "@/pages/event-register";
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/sponsor" component={Sponsor} />
       <Route path="/news" component={News} />
       <Route path="/contact" component={Contact} />
+      <Route path="/projects" component={Projects} />
       <Route path="/gallery" component={Gallery} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
