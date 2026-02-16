@@ -29,6 +29,11 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+import heroImage1 from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
+import heroImage2 from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
+import heroImage3 from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
+import heroImage4 from "@assets/generated_images/Healthcare_Professional_Empowerment_program_d2a2e1c9.png";
+
 interface CloudinaryImage {
   id: string;
   url: string;
@@ -39,31 +44,61 @@ interface CloudinaryImage {
   alt: string;
 }
 
-const SITE_SECTIONS = [
+interface FallbackImage {
+  src: string;
+  alt: string;
+}
+
+interface SiteSection {
+  folder: string;
+  label: string;
+  description: string;
+  fallbackImages?: FallbackImage[];
+}
+
+const SITE_SECTIONS: SiteSection[] = [
   {
     folder: "hero",
     label: "Homepage Hero Carousel",
     description: "Large banner images for the homepage slideshow. Recommended: 1920x800px landscape photos.",
+    fallbackImages: [
+      { src: heroImage1, alt: "Healthcare workers providing medical care" },
+      { src: heroImage2, alt: "Medical outreach program" },
+      { src: heroImage3, alt: "Health advancement program" },
+      { src: heroImage4, alt: "Healthcare professional empowerment" },
+    ],
   },
   {
     folder: "mission",
     label: "Mission Section",
     description: "Image displayed in the 'Our Mission' section. Recommended: 800x600px.",
+    fallbackImages: [
+      { src: heroImage1, alt: "Our mission - healthcare workers" },
+    ],
   },
   {
     folder: "programs-health-advancement",
     label: "Health Advancement Program",
     description: "Photos for the Health Advancement program page and cards.",
+    fallbackImages: [
+      { src: heroImage3, alt: "Health advancement program" },
+    ],
   },
   {
     folder: "programs-medical-aid-outreach",
     label: "Medical Aid Outreach Program",
     description: "Photos for the Medical Aid Outreach program page and cards.",
+    fallbackImages: [
+      { src: heroImage2, alt: "Medical aid outreach program" },
+    ],
   },
   {
     folder: "programs-healthcare-professional-empowerment",
     label: "Healthcare Professional Empowerment",
     description: "Photos for the Healthcare Professional Empowerment program page and cards.",
+    fallbackImages: [
+      { src: heroImage4, alt: "Healthcare professional empowerment" },
+    ],
   },
 ];
 
@@ -208,7 +243,7 @@ function ImageUploader({
   );
 }
 
-function SectionManager({ section }: { section: (typeof SITE_SECTIONS)[0] }) {
+function SectionManager({ section }: { section: SiteSection }) {
   const { toast } = useToast();
   const [expanded, setExpanded] = useState(false);
 
@@ -272,9 +307,19 @@ function SectionManager({ section }: { section: (typeof SITE_SECTIONS)[0] }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">
-              {isLoading ? "..." : `${images.length} image${images.length !== 1 ? "s" : ""}`}
-            </Badge>
+            {isLoading ? (
+              <Badge variant="secondary">...</Badge>
+            ) : images.length > 0 ? (
+              <Badge variant="default">
+                {images.length} image{images.length !== 1 ? "s" : ""}
+              </Badge>
+            ) : section.fallbackImages && section.fallbackImages.length > 0 ? (
+              <Badge variant="secondary">
+                {section.fallbackImages.length} default{section.fallbackImages.length !== 1 ? "s" : ""}
+              </Badge>
+            ) : (
+              <Badge variant="secondary">0 images</Badge>
+            )}
             <span className="text-muted-foreground text-sm">
               {expanded ? "Collapse" : "Expand"}
             </span>
@@ -297,15 +342,51 @@ function SectionManager({ section }: { section: (typeof SITE_SECTIONS)[0] }) {
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : images.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Info className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p className="text-sm font-medium">No images assigned to this section yet.</p>
-              <p className="text-xs mt-1">
-                The site is currently showing placeholder images for this section.
-              </p>
-              <p className="text-xs mt-1">
-                Upload images here, or scroll down to "All Cloudinary Images" to assign existing images to this section.
-              </p>
+            <div className="space-y-4">
+              {section.fallbackImages && section.fallbackImages.length > 0 ? (
+                <>
+                  <div className="flex items-start gap-2 p-3 rounded-md bg-muted/50 border border-muted">
+                    <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Currently showing built-in default images</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        These images are bundled with the site. Upload your own photos above or assign images from "All Cloudinary Images" below to replace them.
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Images currently displayed on site ({section.fallbackImages.length}):
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {section.fallbackImages.map((fb, idx) => (
+                      <div
+                        key={idx}
+                        className="relative rounded-md overflow-hidden border opacity-80"
+                        data-testid={`fallback-image-${section.folder}-${idx}`}
+                      >
+                        <img
+                          src={fb.src}
+                          alt={fb.alt}
+                          className="w-full h-32 object-cover"
+                        />
+                        <div className="p-2 bg-card">
+                          <Badge variant="secondary" className="text-xs">
+                            Built-in default
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Info className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm font-medium">No images assigned to this section yet.</p>
+                  <p className="text-xs mt-1">
+                    Upload images here, or scroll down to "All Cloudinary Images" to assign existing images.
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
