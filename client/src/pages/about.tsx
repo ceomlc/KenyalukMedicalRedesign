@@ -96,6 +96,29 @@ export default function About() {
         </div>
       </section>
 
+      {/* Our Story */}
+      <section className="py-16 md:py-20 bg-background">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
+          <h2 className="font-headings font-semibold text-3xl md:text-4xl mb-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            Our Story
+          </h2>
+          <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "100ms" }}>
+              Founded over 15 years ago, Kenyaluk Medical Foundation began with a simple but powerful vision: to bridge the healthcare gap in underserved communities across Kenya.
+            </p>
+            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "200ms" }}>
+              What started as a small medical outreach program has grown into a comprehensive healthcare initiative, serving over 10,000 individuals annually and training hundreds of healthcare professionals.
+            </p>
+            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
+              Today, we operate three core programs—Health Advancement, Medical Aid Outreach, and Healthcare Professional Empowerment—each designed to address specific challenges in Kenya's healthcare landscape while creating sustainable, long-term impact.
+            </p>
+            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "400ms" }}>
+              Our work is made possible by dedicated volunteers, generous donors, and partnerships with local healthcare facilities and community organizations who share our commitment to health equity.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Mission & Vision */}
       <section className="py-16 md:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -171,29 +194,6 @@ export default function About() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Our Story */}
-      <section className="py-16 md:py-20 bg-background">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
-          <h2 className="font-headings font-semibold text-3xl md:text-4xl mb-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-            Our Story
-          </h2>
-          <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "100ms" }}>
-              Founded over 15 years ago, Kenyaluk Medical Foundation began with a simple but powerful vision: to bridge the healthcare gap in underserved communities across Kenya.
-            </p>
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "200ms" }}>
-              What started as a small medical outreach program has grown into a comprehensive healthcare initiative, serving over 10,000 individuals annually and training hundreds of healthcare professionals.
-            </p>
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "300ms" }}>
-              Today, we operate three core programs—Health Advancement, Medical Aid Outreach, and Healthcare Professional Empowerment—each designed to address specific challenges in Kenya's healthcare landscape while creating sustainable, long-term impact.
-            </p>
-            <p className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "400ms" }}>
-              Our work is made possible by dedicated volunteers, generous donors, and partnerships with local healthcare facilities and community organizations who share our commitment to health equity.
-            </p>
           </div>
         </div>
       </section>
