@@ -20,6 +20,7 @@ import {
 import { eq, and, desc, gte, sql } from "drizzle-orm";
 import Stripe from "stripe";
 import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY must be set");
@@ -431,6 +432,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error fetching folder images:", error);
       res.status(500).json({ message: "Failed to fetch folder images", error: error.message });
+    }
+  });
+
+  // Admin middleware - checks if the user is admin or board_member
+  const isAdmin = async (req: any, res: any, next: any) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== "admin" && user.role !== "board_member")) {
+        return res.status(403).json({ message: "Forbidden: Admin access required" });
+      }
+      next();
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+
+  // Multer setup for file uploads (memory storage)
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only image files are allowed"));
+      }
+    },
+  });
+
+  // Upload image to Cloudinary folder
+  app.post("/api/admin/images/upload", isAuthenticated, isAdmin, requireCloudinary, upload.single("image"), async (req: any, res) => {
+    try {
+      const file = req.file;
+      const folder = req.body.folder || "";
+      if (!file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      const result = await new Promise<any>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder,
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(file.buffer);
+      });
+
+      res.json({
+        id: result.public_id,
+        url: result.secure_url,
+        width: result.width,
+        height: result.height,
+        format: result.format,
+        folder: result.folder || "",
+      });
+    } catch (error: any) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ message: "Failed to upload image", error: error.message });
+    }
+  });
+
+  // Delete image from Cloudinary
+  app.delete("/api/admin/images/:publicId(*)", isAuthenticated, isAdmin, requireCloudinary, async (req, res) => {
+    try {
+      const publicId = req.params.publicId;
+      const result = await cloudinary.uploader.destroy(publicId);
+      if (result.result === "ok") {
+        res.json({ message: "Image deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Image not found or already deleted" });
+      }
+    } catch (error: any) {
+      console.error("Error deleting image:", error);
+      res.status(500).json({ message: "Failed to delete image", error: error.message });
+    }
+  });
+
+  // Create Cloudinary folder
+  app.post("/api/admin/images/folder", isAuthenticated, isAdmin, requireCloudinary, async (req, res) => {
+    try {
+      const { folder } = req.body;
+      if (!folder) {
+        return res.status(400).json({ message: "Folder name is required" });
+      }
+      await cloudinary.api.create_folder(folder);
+      res.json({ message: "Folder created", folder });
+    } catch (error: any) {
+      console.error("Error creating folder:", error);
+      res.status(500).json({ message: "Failed to create folder", error: error.message });
     }
   });
 

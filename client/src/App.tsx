@@ -21,6 +21,7 @@ import News from "@/pages/news";
 import Contact from "@/pages/contact";
 import Portal from "@/pages/portal";
 import Gallery from "@/pages/gallery";
+import AdminImages from "@/pages/admin-images";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -55,6 +56,7 @@ function Router() {
           <Route path="/contact" component={Contact} />
           <Route path="/gallery" component={Gallery} />
           <Route path="/portal" component={Portal} />
+          <Route path="/admin/images" component={AdminImages} />
         </>
       )}
       <Route component={NotFound} />

@@ -95,6 +95,10 @@ Preferred communication style: Simple, everyday language.
 - **Fallback**: All sections fall back to AI-generated placeholder images when Cloudinary folders are empty
 - **Image Optimization**: Automatic via Cloudinary transforms (heroUrl for 1920w, optimizedUrl for 800w, thumbnailUrl for 400x400 fill)
 - **Gallery Page**: `/gallery` with folder navigation, lightbox viewer, and responsive grid
+- **Admin Image Manager**: `/admin/images` - in-site admin page for uploading/deleting images per section
+  - Protected by auth + admin/board_member role check
+  - Admin API: `POST /api/admin/images/upload`, `DELETE /api/admin/images/:publicId`, `POST /api/admin/images/folder`
+  - Accessible from Portal Dashboard "Admin Tools" section
 
 ### Development Tools
 - **Drizzle Kit**: Database schema management and migrations (`npm run db:push`)

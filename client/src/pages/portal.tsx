@@ -4,7 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, LogOut, Shield } from "lucide-react";
+import { User, LogOut, Shield, ImageIcon } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Portal() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -159,13 +160,25 @@ export default function Portal() {
             </CardContent>
           </Card>
 
-          {/* Admin Note */}
-          {user.role === "admin" || user.role === "board_member" && (
-            <Card className="mt-6 border-primary/50">
-              <CardContent className="p-6">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Note:</strong> As an {user.role}, you have access to additional management features. These would be implemented in future phases.
-                </p>
+          {/* Admin Tools */}
+          {(user.role === "admin" || user.role === "board_member") && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Admin Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
+                    <Link href="/admin/images" data-testid="button-manage-images">
+                      <ImageIcon className="h-5 w-5" />
+                      <span className="font-semibold">Manage Images</span>
+                      <span className="text-sm text-muted-foreground">Upload & organize site photos</span>
+                    </Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
