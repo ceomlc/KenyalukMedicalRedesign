@@ -123,6 +123,36 @@ export default function About() {
         </div>
       </section>
 
+      {/* Impact */}
+      <section className="py-16 md:py-20 bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/5" />
+        <div className="max-w-7xl mx-auto px-4 md:px-6 relative">
+          <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h2 className="font-headings font-semibold text-3xl md:text-4xl mb-4">
+              Our Impact
+            </h2>
+            <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto">
+              Measurable outcomes that demonstrate our commitment to healthcare transformation
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <div className="text-center animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: "200ms" }}>
+              <AnimatedCounter end={10000} suffix="+" />
+              <p className="text-lg text-primary-foreground/90">Lives directly impacted through our programs</p>
+            </div>
+            <div className="text-center animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: "400ms" }}>
+              <AnimatedCounter end={50} suffix="+" />
+              <p className="text-lg text-primary-foreground/90">Communities served across Kenya</p>
+            </div>
+            <div className="text-center animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: "600ms" }}>
+              <AnimatedCounter end={200} suffix="+" />
+              <p className="text-lg text-primary-foreground/90">Healthcare workers trained and empowered</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mission & Vision */}
       <section className="py-16 md:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -202,35 +232,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Impact */}
-      <section className="py-16 md:py-20 bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/5" />
-        <div className="max-w-7xl mx-auto px-4 md:px-6 relative">
-          <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="font-headings font-semibold text-3xl md:text-4xl mb-4">
-              Our Impact
-            </h2>
-            <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto">
-              Measurable outcomes that demonstrate our commitment to healthcare transformation
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <div className="text-center animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: "200ms" }}>
-              <AnimatedCounter end={10000} suffix="+" />
-              <p className="text-lg text-primary-foreground/90">Lives directly impacted through our programs</p>
-            </div>
-            <div className="text-center animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: "400ms" }}>
-              <AnimatedCounter end={50} suffix="+" />
-              <p className="text-lg text-primary-foreground/90">Communities served across Kenya</p>
-            </div>
-            <div className="text-center animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: "600ms" }}>
-              <AnimatedCounter end={200} suffix="+" />
-              <p className="text-lg text-primary-foreground/90">Healthcare workers trained and empowered</p>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
