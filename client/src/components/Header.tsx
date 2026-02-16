@@ -23,6 +23,7 @@ export function Header() {
     { label: "About", path: "/about" },
     { label: "Programs", path: "/programs" },
     { label: "Events", path: "/events" },
+    { label: "Gallery", path: "/gallery" },
     { label: "News", path: "/news" },
     { label: "Contact", path: "/contact" },
   ];

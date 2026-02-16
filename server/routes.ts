@@ -19,14 +19,29 @@ import {
 } from "@shared/schema";
 import { eq, and, desc, gte, sql } from "drizzle-orm";
 import Stripe from "stripe";
+import { v2 as cloudinary } from "cloudinary";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY must be set");
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2025-10-29.clover" as any,
 });
+
+const cloudinaryConfigured = !!(
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+);
+
+if (cloudinaryConfigured) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Replit Auth
@@ -306,6 +321,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(result);
     } catch (error) {
       next(error);
+    }
+  });
+
+  // Cloudinary Image API
+  const requireCloudinary = (_req: any, res: any, next: any) => {
+    if (!cloudinaryConfigured) {
+      return res.status(503).json({ message: "Image hosting is not configured. Please add Cloudinary credentials." });
+    }
+    next();
+  };
+
+  app.get("/api/images", requireCloudinary, async (req, res) => {
+    try {
+      const folder = req.query.folder as string | undefined;
+      const tag = req.query.tag as string | undefined;
+      const maxResults = Math.min(parseInt(req.query.limit as string) || 30, 100);
+      const nextCursor = req.query.cursor as string | undefined;
+
+      let result;
+      if (tag) {
+        result = await cloudinary.api.resources_by_tag(tag, {
+          max_results: maxResults,
+          next_cursor: nextCursor,
+          resource_type: "image",
+        });
+      } else {
+        const options: any = {
+          max_results: maxResults,
+          next_cursor: nextCursor,
+          resource_type: "image",
+          type: "upload",
+        };
+        if (folder) {
+          options.prefix = folder;
+        }
+        result = await cloudinary.api.resources(options);
+      }
+
+      const images = result.resources.map((img: any) => ({
+        id: img.public_id,
+        url: img.secure_url,
+        width: img.width,
+        height: img.height,
+        format: img.format,
+        folder: img.folder || "",
+        alt: img.context?.custom?.alt || img.public_id.split("/").pop() || "",
+        caption: img.context?.custom?.caption || "",
+      }));
+
+      res.json({
+        images,
+        nextCursor: result.next_cursor || null,
+        totalCount: result.rate_limit_remaining,
+      });
+    } catch (error: any) {
+      console.error("Error fetching Cloudinary images:", error);
+      res.status(500).json({ message: "Failed to fetch images", error: error.message });
+    }
+  });
+
+  app.get("/api/images/folders", requireCloudinary, async (_req, res) => {
+    try {
+      const result = await cloudinary.api.root_folders();
+      const folders = result.folders.map((f: any) => ({
+        name: f.name,
+        path: f.path,
+      }));
+      res.json({ folders });
+    } catch (error: any) {
+      console.error("Error fetching Cloudinary folders:", error);
+      res.status(500).json({ message: "Failed to fetch folders", error: error.message });
+    }
+  });
+
+  app.get("/api/images/folder/:folder(*)", requireCloudinary, async (req, res) => {
+    try {
+      const folder = req.params.folder;
+      const maxResults = Math.min(parseInt(req.query.limit as string) || 30, 100);
+      const nextCursor = req.query.cursor as string | undefined;
+
+      const [resources, subfolders] = await Promise.all([
+        cloudinary.api.resources({
+          max_results: maxResults,
+          next_cursor: nextCursor,
+          resource_type: "image",
+          type: "upload",
+          prefix: folder + "/",
+        }),
+        cloudinary.api.sub_folders(folder).catch(() => ({ folders: [] })),
+      ]);
+
+      const images = resources.resources.map((img: any) => ({
+        id: img.public_id,
+        url: img.secure_url,
+        width: img.width,
+        height: img.height,
+        format: img.format,
+        folder: img.folder || "",
+        alt: img.context?.custom?.alt || img.public_id.split("/").pop() || "",
+        caption: img.context?.custom?.caption || "",
+      }));
+
+      res.json({
+        images,
+        subfolders: subfolders.folders.map((f: any) => ({ name: f.name, path: f.path })),
+        nextCursor: resources.next_cursor || null,
+      });
+    } catch (error: any) {
+      console.error("Error fetching folder images:", error);
+      res.status(500).json({ message: "Failed to fetch folder images", error: error.message });
     }
   });
 
