@@ -6,6 +6,8 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Upload,
   Trash2,
@@ -18,6 +20,7 @@ import {
   Plus,
   MoveRight,
   Info,
+  Shuffle,
 } from "lucide-react";
 import { Link } from "wouter";
 import {
@@ -243,6 +246,86 @@ function ImageUploader({
   );
 }
 
+function HeroRandomizerToggle() {
+  const { toast } = useToast();
+
+  const { data, isLoading } = useQuery<{ key: string; value: string }>({
+    queryKey: ["/api/settings/hero_randomizer"],
+    staleTime: 0,
+  });
+
+  const isEnabled = data?.value === "true";
+
+  const toggleMutation = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      const res = await fetch("/api/admin/settings/hero_randomizer", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ value: String(enabled) }),
+      });
+      if (!res.ok) throw new Error("Failed to update setting");
+      return res.json();
+    },
+    onSuccess: (_data, enabled) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings/hero_randomizer"] });
+      toast({
+        title: enabled ? "Random Mode enabled" : "Fixed Mode enabled",
+        description: enabled
+          ? "The homepage hero will show a different image from this folder on each visit."
+          : "The homepage hero will always show the first image in this folder.",
+      });
+    },
+    onError: () => {
+      toast({ title: "Failed to update setting", variant: "destructive" });
+    },
+  });
+
+  return (
+    <div className="flex items-start gap-4 p-4 rounded-md border bg-muted/30">
+      <div className="p-2 rounded-md bg-primary/10 flex-shrink-0 mt-0.5">
+        <Shuffle className="h-5 w-5 text-primary" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <p className="font-medium text-sm">Hero Image Mode</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Controls how the homepage hero background image is selected from this folder.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <Badge variant={isEnabled ? "default" : "secondary"} data-testid="badge-hero-mode">
+              {isEnabled ? "Random Mode" : "Fixed Mode"}
+            </Badge>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="hero-randomizer-switch" className="text-xs text-muted-foreground cursor-pointer">
+                  {isEnabled ? "On" : "Off"}
+                </Label>
+                <Switch
+                  id="hero-randomizer-switch"
+                  checked={isEnabled}
+                  onCheckedChange={(checked) => toggleMutation.mutate(checked)}
+                  disabled={toggleMutation.isPending}
+                  data-testid="switch-hero-randomizer"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          {isEnabled
+            ? "Each page load picks a random image from this folder to display in the hero."
+            : "The first image in this folder is always shown in the hero. If no images are uploaded, the built-in defaults are used."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function SectionManager({ section }: { section: SiteSection }) {
   const { toast } = useToast();
   const [expanded, setExpanded] = useState(false);
@@ -329,6 +412,7 @@ function SectionManager({ section }: { section: SiteSection }) {
 
       {expanded && (
         <CardContent className="space-y-6">
+          {section.folder === "hero" && <HeroRandomizerToggle />}
           <ImageUploader
             folder={section.folder}
             onUploadComplete={() => {

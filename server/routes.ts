@@ -703,6 +703,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Site Settings (public read)
+  app.get("/api/settings/:key", async (req, res) => {
+    try {
+      const { key } = req.params;
+      const value = await storage.getSetting(key);
+      res.json({ key, value: value ?? "false" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
+  // Admin Settings CRUD
+  app.get("/api/admin/settings", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const settings = await storage.getAllSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.put("/api/admin/settings/:key", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const { value } = req.body;
+      if (typeof value !== "string") {
+        return res.status(400).json({ message: "value must be a string" });
+      }
+      await storage.setSetting(key, value);
+      res.json({ key, value });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update setting" });
+    }
+  });
+
   // Newsletter Subscriptions
   app.post("/api/newsletter/subscribe", async (req, res, next) => {
     try {

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,12 +14,30 @@ export default function Home() {
     queryKey: ["/api/events/upcoming"],
   });
 
-  const { images: cloudinaryHeroImages, hasImages: hasHeroImages } = useCloudinaryImages({
-    folder: "hero",
-    limit: 1,
+  const { data: randomizerSetting } = useQuery<{ key: string; value: string }>({
+    queryKey: ["/api/settings/hero_randomizer"],
+    staleTime: 30 * 1000,
   });
 
-  const heroImage = hasHeroImages ? heroUrl(cloudinaryHeroImages[0].url) : heroImageFallback;
+  const isRandomMode = randomizerSetting?.value === "true";
+
+  const { images: cloudinaryHeroImages, hasImages: hasHeroImages } = useCloudinaryImages({
+    folder: "hero",
+    limit: isRandomMode ? 50 : 1,
+  });
+
+  const randomIndex = useMemo(() => {
+    if (!hasHeroImages || cloudinaryHeroImages.length === 0) return 0;
+    return Math.floor(Math.random() * cloudinaryHeroImages.length);
+  }, [hasHeroImages, cloudinaryHeroImages.length]);
+
+  const heroImage = useMemo(() => {
+    if (!hasHeroImages) return heroImageFallback;
+    if (isRandomMode) {
+      return heroUrl(cloudinaryHeroImages[randomIndex]?.url ?? cloudinaryHeroImages[0].url);
+    }
+    return heroUrl(cloudinaryHeroImages[0].url);
+  }, [hasHeroImages, isRandomMode, cloudinaryHeroImages, randomIndex]);
 
   const programs = [
     {

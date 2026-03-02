@@ -81,6 +81,16 @@ Preferred communication style: Simple, everyday language.
 - **Required Secrets**: `SESSION_SECRET`, `REPL_ID` (auto-provided by Replit)
 - **Optional**: `ISSUER_URL` (defaults to Replit's OIDC endpoint)
 
+### Site Settings
+- **Table**: `site_settings` (key/value pairs in PostgreSQL)
+- **Public API**: `GET /api/settings/:key` — readable by anyone (used by frontend)
+- **Admin API**: `GET /api/admin/settings`, `PUT /api/admin/settings/:key` — admin-only
+- **Current Settings**:
+  - `hero_randomizer` — `"true"` or `"false"` (default `"false"`)
+    - When `"true"`: homepage hero picks a random image from the Cloudinary `hero` folder on each page load
+    - When `"false"`: homepage hero always shows the first image in the `hero` folder (or fallback)
+- **Admin UI**: Toggle visible inside the "Homepage Hero Carousel" section of `/admin/images` when expanded
+
 ### Image Hosting (Cloudinary)
 - **Provider**: Cloudinary SDK (`cloudinary` npm package)
 - **Required Secrets**: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
