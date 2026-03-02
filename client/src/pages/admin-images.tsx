@@ -246,16 +246,23 @@ function ImageUploader({
   );
 }
 
-function HeroRandomizerToggle({ imageCount }: { imageCount: number }) {
+function HeroRandomizerToggle() {
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery<{ key: string; value: string }>({
+  const { data: settingData, isLoading: settingLoading } = useQuery<{ key: string; value: string }>({
     queryKey: ["/api/settings/hero_randomizer"],
     staleTime: 0,
   });
 
-  const isEnabled = data?.value === "true";
-  const hasImages = imageCount > 0;
+  const { data: allImagesData, isLoading: imagesLoading } = useQuery<{ images: CloudinaryImage[] }>({
+    queryKey: ["/api/images"],
+    staleTime: 30 * 1000,
+    retry: false,
+  });
+
+  const isEnabled = settingData?.value === "true";
+  const totalImages = allImagesData?.images?.length ?? 0;
+  const hasAnyImages = totalImages > 0;
 
   const toggleMutation = useMutation({
     mutationFn: async (enabled: boolean) => {
@@ -273,8 +280,8 @@ function HeroRandomizerToggle({ imageCount }: { imageCount: number }) {
       toast({
         title: enabled ? "Random Mode enabled" : "Fixed Mode enabled",
         description: enabled
-          ? "The homepage hero will show a different image from this folder on each visit."
-          : "The homepage hero will always show the first image in this folder.",
+          ? "The homepage hero will now pick a random image from your entire Cloudinary gallery on each visit."
+          : "The homepage hero will show the first image in the hero folder (or the default if empty).",
       });
     },
     onError: () => {
@@ -293,14 +300,14 @@ function HeroRandomizerToggle({ imageCount }: { imageCount: number }) {
             <div>
               <p className="font-medium text-sm">Hero Image Mode</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Controls how the homepage hero background image is selected from this folder.
+                Controls how the homepage hero background image is chosen.
               </p>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
               <Badge variant={isEnabled ? "default" : "secondary"} data-testid="badge-hero-mode">
                 {isEnabled ? "Random Mode" : "Fixed Mode"}
               </Badge>
-              {isLoading ? (
+              {settingLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               ) : (
                 <div className="flex items-center gap-2">
@@ -320,23 +327,25 @@ function HeroRandomizerToggle({ imageCount }: { imageCount: number }) {
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             {isEnabled
-              ? hasImages
-                ? `Each page load picks a random image from the ${imageCount} image${imageCount !== 1 ? "s" : ""} in this folder.`
-                : "Random mode is on, but needs images to work."
-              : "The first image in this folder is always shown in the hero."}
+              ? imagesLoading
+                ? "Checking gallery..."
+                : hasAnyImages
+                  ? `Each page load picks a random image from your ${totalImages} Cloudinary gallery image${totalImages !== 1 ? "s" : ""}.`
+                  : "Random mode is on, but no images have been uploaded to your gallery yet."
+              : "The homepage hero always shows the first image in the hero folder above. Falls back to the built-in default if that folder is empty."}
           </p>
         </div>
       </div>
 
-      {isEnabled && !hasImages && (
+      {isEnabled && !imagesLoading && !hasAnyImages && (
         <div className="flex items-start gap-3 p-3 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
           <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
             <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-              No images uploaded to this folder yet
+              No images in your Cloudinary gallery yet
             </p>
             <p className="text-xs text-amber-700 dark:text-amber-400">
-              The randomizer is on, but the homepage is currently showing the built-in default image because this folder is empty. Upload your own photos above to start randomizing them on the homepage.
+              Upload images to any section on this page and they will be included in the random hero pool.
             </p>
           </div>
         </div>
@@ -431,7 +440,7 @@ function SectionManager({ section }: { section: SiteSection }) {
 
       {expanded && (
         <CardContent className="space-y-6">
-          {section.folder === "hero" && <HeroRandomizerToggle imageCount={images.length} />}
+          {section.folder === "hero" && <HeroRandomizerToggle />}
           <ImageUploader
             folder={section.folder}
             onUploadComplete={() => {

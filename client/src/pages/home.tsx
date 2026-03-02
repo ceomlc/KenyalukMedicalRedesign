@@ -21,23 +21,33 @@ export default function Home() {
 
   const isRandomMode = randomizerSetting?.value === "true";
 
-  const { images: cloudinaryHeroImages, hasImages: hasHeroImages } = useCloudinaryImages({
+  // Fixed mode: just the first hero-folder image
+  const { images: heroFolderImages, hasImages: hasHeroImages } = useCloudinaryImages({
     folder: "hero",
-    limit: isRandomMode ? 50 : 1,
+    limit: 1,
+    enabled: !isRandomMode,
+  });
+
+  // Random mode: all images across the entire Cloudinary gallery
+  const { images: allCloudinaryImages, hasImages: hasAnyImages } = useCloudinaryImages({
+    folder: "",
+    limit: 100,
+    enabled: isRandomMode,
   });
 
   const randomIndex = useMemo(() => {
-    if (!hasHeroImages || cloudinaryHeroImages.length === 0) return 0;
-    return Math.floor(Math.random() * cloudinaryHeroImages.length);
-  }, [hasHeroImages, cloudinaryHeroImages.length]);
+    if (!hasAnyImages || allCloudinaryImages.length === 0) return 0;
+    return Math.floor(Math.random() * allCloudinaryImages.length);
+  }, [hasAnyImages, allCloudinaryImages.length]);
 
   const heroImage = useMemo(() => {
-    if (!hasHeroImages) return heroImageFallback;
     if (isRandomMode) {
-      return heroUrl(cloudinaryHeroImages[randomIndex]?.url ?? cloudinaryHeroImages[0].url);
+      if (!hasAnyImages) return heroImageFallback;
+      return heroUrl(allCloudinaryImages[randomIndex]?.url ?? allCloudinaryImages[0].url);
     }
-    return heroUrl(cloudinaryHeroImages[0].url);
-  }, [hasHeroImages, isRandomMode, cloudinaryHeroImages, randomIndex]);
+    if (!hasHeroImages) return heroImageFallback;
+    return heroUrl(heroFolderImages[0].url);
+  }, [isRandomMode, hasAnyImages, allCloudinaryImages, randomIndex, hasHeroImages, heroFolderImages]);
 
   const programs = [
     {
