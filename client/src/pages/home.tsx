@@ -1,19 +1,16 @@
-import { useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, Calendar } from "lucide-react";
+import { Heart, Stethoscope, GraduationCap, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import type { Event } from "@shared/schema";
 import { useCloudinaryImages, heroUrl } from "@/hooks/useCloudinaryImages";
 import heroImageFallback from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
-import { format } from "date-fns";
+
+const SLIDE_INTERVAL_MS = 7000;
+const FADE_DURATION_MS = 1000;
 
 export default function Home() {
-  const { data: upcomingEvents } = useQuery<Event[]>({
-    queryKey: ["/api/events/upcoming"],
-  });
-
   const { data: randomizerSetting } = useQuery<{ key: string; value: string }>({
     queryKey: ["/api/settings/hero_randomizer"],
     staleTime: 30 * 1000,
@@ -21,33 +18,57 @@ export default function Home() {
 
   const isRandomMode = randomizerSetting?.value === "true";
 
-  // Fixed mode: just the first hero-folder image
   const { images: heroFolderImages, hasImages: hasHeroImages } = useCloudinaryImages({
     folder: "hero",
     limit: 1,
     enabled: !isRandomMode,
   });
 
-  // Random mode: all images across the entire Cloudinary gallery
   const { images: allCloudinaryImages, hasImages: hasAnyImages } = useCloudinaryImages({
     folder: "",
     limit: 100,
     enabled: isRandomMode,
   });
 
-  const randomIndex = useMemo(() => {
-    if (!hasAnyImages || allCloudinaryImages.length === 0) return 0;
-    return Math.floor(Math.random() * allCloudinaryImages.length);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [nextIndex, setNextIndex] = useState(1);
+  const [isFading, setIsFading] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (hasAnyImages && allCloudinaryImages.length > 0) {
+      const start = Math.floor(Math.random() * allCloudinaryImages.length);
+      setCurrentIndex(start);
+      setNextIndex((start + 1) % allCloudinaryImages.length);
+    }
   }, [hasAnyImages, allCloudinaryImages.length]);
 
-  const heroImage = useMemo(() => {
-    if (isRandomMode) {
-      if (!hasAnyImages) return heroImageFallback;
-      return heroUrl(allCloudinaryImages[randomIndex]?.url ?? allCloudinaryImages[0].url);
-    }
-    if (!hasHeroImages) return heroImageFallback;
-    return heroUrl(heroFolderImages[0].url);
-  }, [isRandomMode, hasAnyImages, allCloudinaryImages, randomIndex, hasHeroImages, heroFolderImages]);
+  const advance = useCallback(() => {
+    if (!isRandomMode || allCloudinaryImages.length <= 1) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % allCloudinaryImages.length;
+        setNextIndex((next + 1) % allCloudinaryImages.length);
+        return next;
+      });
+      setIsFading(false);
+    }, FADE_DURATION_MS);
+  }, [isRandomMode, allCloudinaryImages.length]);
+
+  useEffect(() => {
+    if (!isRandomMode || allCloudinaryImages.length <= 1 || isPaused) return;
+    const timer = setInterval(advance, SLIDE_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [isRandomMode, allCloudinaryImages.length, isPaused, advance]);
+
+  const carouselImages = isRandomMode && hasAnyImages ? allCloudinaryImages : null;
+
+  const fixedImage = (() => {
+    if (isRandomMode) return null;
+    if (hasHeroImages) return heroUrl(heroFolderImages[0].url);
+    return heroImageFallback;
+  })();
 
   const programs = [
     {
@@ -80,17 +101,52 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[600px] md:min-h-[700px] lg:min-h-[800px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={heroImage}
-            alt="Healthcare workers providing medical care to community members"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
-        </div>
+      <section
+        className="relative min-h-[600px] md:min-h-[700px] lg:min-h-[800px] flex items-center justify-center overflow-hidden"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {carouselImages ? (
+          <>
+            {/* Current image */}
+            <div
+              className="absolute inset-0 transition-opacity"
+              style={{ transitionDuration: `${FADE_DURATION_MS}ms`, opacity: isFading ? 0 : 1 }}
+            >
+              <img
+                src={heroUrl(carouselImages[currentIndex]?.url ?? heroImageFallback)}
+                alt="Homepage hero"
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 text-center">
+            {/* Next image (pre-loaded underneath for seamless fade) */}
+            <div
+              className="absolute inset-0 transition-opacity"
+              style={{ transitionDuration: `${FADE_DURATION_MS}ms`, opacity: isFading ? 1 : 0 }}
+            >
+              <img
+                src={heroUrl(carouselImages[nextIndex]?.url ?? heroImageFallback)}
+                alt="Homepage hero"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </>
+        ) : (
+          <div className="absolute inset-0">
+            <img
+              src={fixedImage ?? heroImageFallback}
+              alt="Homepage hero"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        {/* Dark wash overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 z-10" />
+
+        {/* Hero content */}
+        <div className="relative z-20 max-w-5xl mx-auto px-4 md:px-6 text-center">
           <h1 className="font-headings font-bold text-white text-4xl md:text-6xl lg:text-7xl mb-6 leading-tight">
             Transforming Lives Through Healthcare
           </h1>
@@ -104,9 +160,7 @@ export default function Home() {
               asChild
               data-testid="button-donate-hero"
             >
-              <Link href="/donate">
-                <a>Donate Now</a>
-              </Link>
+              <Link href="/donate">Donate Now</Link>
             </Button>
             <Button
               size="lg"
@@ -115,12 +169,36 @@ export default function Home() {
               asChild
               data-testid="button-volunteer-hero"
             >
-              <Link href="/volunteer">
-                <a>Volunteer</a>
-              </Link>
+              <Link href="/volunteer">Volunteer</Link>
             </Button>
           </div>
         </div>
+
+        {/* Dot indicators — only shown in carousel mode with multiple images */}
+        {carouselImages && carouselImages.length > 1 && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            {carouselImages.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setIsFading(true);
+                  setTimeout(() => {
+                    setCurrentIndex(i);
+                    setNextIndex((i + 1) % carouselImages.length);
+                    setIsFading(false);
+                  }, FADE_DURATION_MS);
+                }}
+                className={`rounded-full transition-all duration-300 ${
+                  i === currentIndex
+                    ? "w-6 h-2 bg-white"
+                    : "w-2 h-2 bg-white/50 hover:bg-white/75"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+                data-testid={`dot-hero-${i}`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Impact Metrics */}
@@ -173,9 +251,9 @@ export default function Home() {
                     data-testid={`link-program-${program.slug}`}
                   >
                     <Link href={`/programs/${program.slug}`}>
-                      <a className="inline-flex items-center">
+                      <span className="inline-flex items-center">
                         Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
+                      </span>
                     </Link>
                   </Button>
                 </CardContent>
@@ -202,9 +280,7 @@ export default function Home() {
               asChild
               data-testid="button-donate-cta"
             >
-              <Link href="/donate">
-                <a>Donate Now</a>
-              </Link>
+              <Link href="/donate">Donate Now</Link>
             </Button>
             <Button
               size="lg"
@@ -213,9 +289,7 @@ export default function Home() {
               asChild
               data-testid="button-get-involved"
             >
-              <Link href="/volunteer">
-                <a>Get Involved</a>
-              </Link>
+              <Link href="/volunteer">Get Involved</Link>
             </Button>
           </div>
         </div>
