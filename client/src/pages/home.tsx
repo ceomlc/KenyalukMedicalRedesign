@@ -1,19 +1,14 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import type { BlogPost, Event } from "@shared/schema";
+import type { Event } from "@shared/schema";
 import { useCloudinaryImages, heroUrl } from "@/hooks/useCloudinaryImages";
 import heroImageFallback from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
 import { format } from "date-fns";
 
 export default function Home() {
-  const { data: latestNews } = useQuery<BlogPost[]>({
-    queryKey: ["/api/blog/latest"],
-  });
-
   const { data: upcomingEvents } = useQuery<Event[]>({
     queryKey: ["/api/events/upcoming"],
   });
@@ -160,62 +155,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Latest News */}
-      {latestNews && latestNews.length > 0 && (
-        <section className="py-16 md:py-20 bg-background">
-          <div className="max-w-7xl mx-auto px-4 md:px-6">
-            <div className="flex justify-between items-center mb-12">
-              <h2 className="font-headings font-semibold text-3xl md:text-4xl">
-                Latest News
-              </h2>
-              <Button variant="ghost" asChild data-testid="link-all-news">
-                <Link href="/news">
-                  <a className="inline-flex items-center">
-                    View All <ArrowRight className="ml-2 h-4 w-4" />
-                  </a>
-                </Link>
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {latestNews.slice(0, 2).map((post) => (
-                <Card
-                  key={post.id}
-                  className="hover-elevate active-elevate-2 transition-all"
-                  data-testid={`news-card-${post.id}`}
-                >
-                  <CardContent className="p-0">
-                    {post.imageUrl && (
-                      <img
-                        src={post.imageUrl}
-                        alt={post.title}
-                        className="w-full aspect-video object-cover rounded-t-md"
-                      />
-                    )}
-                    <div className="p-6">
-                      <Badge className="mb-3">{post.category}</Badge>
-                      <h3 className="font-headings font-semibold text-xl mb-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        {post.excerpt}
-                      </p>
-                      <Button variant="ghost" className="p-0 h-auto" asChild>
-                        <Link href={`/news/${post.slug}`}>
-                          <a className="inline-flex items-center text-primary">
-                            Read More <ArrowRight className="ml-2 h-4 w-4" />
-                          </a>
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* CTA Section */}
       <section className="py-16 md:py-20 bg-primary text-primary-foreground">

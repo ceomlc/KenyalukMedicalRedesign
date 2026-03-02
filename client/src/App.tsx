@@ -17,7 +17,6 @@ import Events from "@/pages/events";
 import Donate from "@/pages/donate";
 import Volunteer from "@/pages/volunteer";
 import Sponsor from "@/pages/sponsor";
-import News from "@/pages/news";
 import Contact from "@/pages/contact";
 import Portal from "@/pages/portal";
 import Gallery from "@/pages/gallery";
@@ -44,7 +43,6 @@ function Router() {
       <Route path="/donate" component={Donate} />
       <Route path="/volunteer" component={Volunteer} />
       <Route path="/sponsor" component={Sponsor} />
-      <Route path="/news" component={News} />
       <Route path="/contact" component={Contact} />
       <Route path="/projects" component={Projects} />
       <Route path="/medical-mission-fair" component={MedicalMissionFair} />

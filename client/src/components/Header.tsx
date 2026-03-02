@@ -25,7 +25,6 @@ export function Header() {
     { label: "Projects", path: "/projects" },
     { label: "Events", path: "/events" },
     { label: "Gallery", path: "/gallery" },
-    { label: "News", path: "/news" },
     { label: "Contact", path: "/contact" },
   ];
 

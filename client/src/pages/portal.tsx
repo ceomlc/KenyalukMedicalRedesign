@@ -160,12 +160,6 @@ export default function Portal() {
                     <span className="text-sm text-muted-foreground">Support our mission</span>
                   </a>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
-                  <a href="/news" data-testid="button-news">
-                    <span className="font-semibold">Latest News</span>
-                    <span className="text-sm text-muted-foreground">Read updates</span>
-                  </a>
-                </Button>
               </div>
             </CardContent>
           </Card>
