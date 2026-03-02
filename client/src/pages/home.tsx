@@ -174,31 +174,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Dot indicators — only shown in carousel mode with multiple images */}
-        {carouselImages && carouselImages.length > 1 && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-            {carouselImages.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setIsFading(true);
-                  setTimeout(() => {
-                    setCurrentIndex(i);
-                    setNextIndex((i + 1) % carouselImages.length);
-                    setIsFading(false);
-                  }, FADE_DURATION_MS);
-                }}
-                className={`rounded-full transition-all duration-300 ${
-                  i === currentIndex
-                    ? "w-6 h-2 bg-white"
-                    : "w-2 h-2 bg-white/50 hover:bg-white/75"
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-                data-testid={`dot-hero-${i}`}
-              />
-            ))}
-          </div>
-        )}
       </section>
 
       {/* Impact Metrics */}
