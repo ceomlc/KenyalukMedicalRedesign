@@ -246,7 +246,7 @@ function ImageUploader({
   );
 }
 
-function HeroRandomizerToggle() {
+function HeroRandomizerToggle({ imageCount }: { imageCount: number }) {
   const { toast } = useToast();
 
   const { data, isLoading } = useQuery<{ key: string; value: string }>({
@@ -255,6 +255,7 @@ function HeroRandomizerToggle() {
   });
 
   const isEnabled = data?.value === "true";
+  const hasImages = imageCount > 0;
 
   const toggleMutation = useMutation({
     mutationFn: async (enabled: boolean) => {
@@ -282,46 +283,64 @@ function HeroRandomizerToggle() {
   });
 
   return (
-    <div className="flex items-start gap-4 p-4 rounded-md border bg-muted/30">
-      <div className="p-2 rounded-md bg-primary/10 flex-shrink-0 mt-0.5">
-        <Shuffle className="h-5 w-5 text-primary" />
+    <div className="space-y-3">
+      <div className="flex items-start gap-4 p-4 rounded-md border bg-muted/30">
+        <div className="p-2 rounded-md bg-primary/10 flex-shrink-0 mt-0.5">
+          <Shuffle className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="font-medium text-sm">Hero Image Mode</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Controls how the homepage hero background image is selected from this folder.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <Badge variant={isEnabled ? "default" : "secondary"} data-testid="badge-hero-mode">
+                {isEnabled ? "Random Mode" : "Fixed Mode"}
+              </Badge>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="hero-randomizer-switch" className="text-xs text-muted-foreground cursor-pointer">
+                    {isEnabled ? "On" : "Off"}
+                  </Label>
+                  <Switch
+                    id="hero-randomizer-switch"
+                    checked={isEnabled}
+                    onCheckedChange={(checked) => toggleMutation.mutate(checked)}
+                    disabled={toggleMutation.isPending}
+                    data-testid="switch-hero-randomizer"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {isEnabled
+              ? hasImages
+                ? `Each page load picks a random image from the ${imageCount} image${imageCount !== 1 ? "s" : ""} in this folder.`
+                : "Random mode is on, but needs images to work."
+              : "The first image in this folder is always shown in the hero."}
+          </p>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <p className="font-medium text-sm">Hero Image Mode</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Controls how the homepage hero background image is selected from this folder.
+
+      {isEnabled && !hasImages && (
+        <div className="flex items-start gap-3 p-3 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
+          <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+              No images uploaded to this folder yet
+            </p>
+            <p className="text-xs text-amber-700 dark:text-amber-400">
+              The randomizer is on, but the homepage is currently showing the built-in default image because this folder is empty. Upload your own photos above to start randomizing them on the homepage.
             </p>
           </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <Badge variant={isEnabled ? "default" : "secondary"} data-testid="badge-hero-mode">
-              {isEnabled ? "Random Mode" : "Fixed Mode"}
-            </Badge>
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            ) : (
-              <div className="flex items-center gap-2">
-                <Label htmlFor="hero-randomizer-switch" className="text-xs text-muted-foreground cursor-pointer">
-                  {isEnabled ? "On" : "Off"}
-                </Label>
-                <Switch
-                  id="hero-randomizer-switch"
-                  checked={isEnabled}
-                  onCheckedChange={(checked) => toggleMutation.mutate(checked)}
-                  disabled={toggleMutation.isPending}
-                  data-testid="switch-hero-randomizer"
-                />
-              </div>
-            )}
-          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          {isEnabled
-            ? "Each page load picks a random image from this folder to display in the hero."
-            : "The first image in this folder is always shown in the hero. If no images are uploaded, the built-in defaults are used."}
-        </p>
-      </div>
+      )}
     </div>
   );
 }
@@ -412,7 +431,7 @@ function SectionManager({ section }: { section: SiteSection }) {
 
       {expanded && (
         <CardContent className="space-y-6">
-          {section.folder === "hero" && <HeroRandomizerToggle />}
+          {section.folder === "hero" && <HeroRandomizerToggle imageCount={images.length} />}
           <ImageUploader
             folder={section.folder}
             onUploadComplete={() => {
