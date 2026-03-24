@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import bcrypt from "bcrypt";
+import { db } from "./db";
+import { users } from "../shared/schema";
+import { eq } from "drizzle-orm";
 
 const app = express();
 
@@ -46,7 +50,32 @@ app.use((req, res, next) => {
   next();
 });
 
+async function seedAdmin() {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminEmail || !adminPassword) {
+    log("No ADMIN_EMAIL/ADMIN_PASSWORD set, skipping admin seed.");
+    return;
+  }
+  const existing = await db.select().from(users).where(eq(users.email, adminEmail)).limit(1);
+  if (existing.length > 0) {
+    await db.update(users).set({ role: "admin" }).where(eq(users.email, adminEmail));
+    log("Admin user confirmed.");
+    return;
+  }
+  const hashedPassword = await bcrypt.hash(adminPassword, 10);
+  await db.insert(users).values({
+    email: adminEmail,
+    password: hashedPassword,
+    firstName: "Admin",
+    lastName: "",
+    role: "admin",
+  });
+  log("Admin user created.");
+}
+
 (async () => {
+  await seedAdmin();
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
