@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Users, Stethoscope, GraduationCap, ArrowRight, HandHeart, Calendar, Mail, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useCloudinaryImages, heroUrl, optimizedUrl } from "@/hooks/useCloudinaryImages";
+import { VideoSection } from "@/components/VideoSection";
 import heroImage1 from "@assets/generated_images/Homepage_hero_medical_mission_8407b3a7.png";
 import heroImage2 from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
 import heroImage3 from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
@@ -422,6 +423,13 @@ export default function Landing() {
           </Card>
         </div>
       </section>
+
+      {/* Videos Section — only renders when videos exist for "home" section */}
+      <VideoSection
+        section="home"
+        heading="Watch Our Work in Action"
+        subheading="See the impact we're making in communities across Kenya"
+      />
 
       {/* Contact CTA */}
       <section className="py-16 md:py-24 bg-accent text-accent-foreground">

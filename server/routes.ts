@@ -3,16 +3,17 @@ import { createServer, type Server } from "http";
 import { db } from "./db";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./auth";
-import { 
-  users, 
+import {
+  users,
   sessions,
-  events, 
-  blogPosts, 
-  donations, 
-  volunteerSubmissions, 
+  events,
+  blogPosts,
+  donations,
+  volunteerSubmissions,
   contactMessages,
   eventRegistrations,
   newsletterSubscribers,
+  videos,
   insertEventSchema,
   insertBlogPostSchema,
   insertDonationSchema,
@@ -20,6 +21,7 @@ import {
   insertContactMessageSchema,
   insertEventRegistrationSchema,
   insertNewsletterSubscriberSchema,
+  insertVideoSchema,
 } from "@shared/schema";
 import { eq, and, desc, gte, sql, count, sum } from "drizzle-orm";
 import Stripe from "stripe";
@@ -940,6 +942,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating contact message status:", error);
       res.status(500).json({ message: "Failed to update contact message status" });
+    }
+  });
+
+  // Videos API — public read
+  app.get("/api/videos", async (req, res, next) => {
+    try {
+      const { section } = req.query;
+      let query = db.select().from(videos).where(eq(videos.isActive, true)).$dynamic();
+      if (section && typeof section === "string") {
+        query = query.where(eq(videos.section, section));
+      }
+      const result = await query.orderBy(videos.displayOrder, desc(videos.createdAt));
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Admin Videos CRUD
+  app.get("/api/admin/videos", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const result = await db.select().from(videos).orderBy(videos.section, videos.displayOrder);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/admin/videos", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const validated = insertVideoSchema.parse(req.body);
+      const result = await db.insert(videos).values(validated).returning();
+      res.status(201).json(result[0]);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put("/api/admin/videos/:id", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const validated = insertVideoSchema.partial().parse(req.body);
+      const result = await db
+        .update(videos)
+        .set({ ...validated, updatedAt: new Date() })
+        .where(eq(videos.id, id))
+        .returning();
+      if (result.length === 0) return res.status(404).json({ message: "Video not found" });
+      res.json(result[0]);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete("/api/admin/videos/:id", isAuthenticated, isAdmin, async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await db.delete(videos).where(eq(videos.id, id));
+      res.json({ message: "Video deleted" });
+    } catch (error) {
+      next(error);
     }
   });
 

@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Stethoscope, GraduationCap, ArrowRight, Users, MapPin, TrendingUp } from "lucide-react";
 import { useCloudinaryImages, optimizedUrl } from "@/hooks/useCloudinaryImages";
-import healthImage from "@assets/generated_images/Health_Advancement_program_image_2dd82fce.png";
+import { VideoSection } from "@/components/VideoSection";
+import healthImage from "@assets/generated_images/Health_Advancement_updated.jpg";
 import outreachImage from "@assets/generated_images/Medical_Aid_Outreach_program_6e6641dc.png";
-import empowermentImage from "@assets/generated_images/Healthcare_Professional_Empowerment_program_d2a2e1c9.png";
+import empowermentImage from "@assets/generated_images/Healthcare_Professional_Empowerment_updated.jpg";
 
 const programConfigs = [
   {
@@ -209,6 +210,13 @@ export default function Programs() {
           </div>
         </div>
       </section>
+
+      {/* Videos Section — only renders when videos exist for "programs" section */}
+      <VideoSection
+        section="programs"
+        heading="Programs in Action"
+        subheading="Watch how our programs are transforming lives across Kenya"
+      />
 
       {/* CTA Section */}
       <section className="relative py-20 md:py-28 overflow-hidden">

@@ -203,6 +203,29 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 
+// Videos table
+export const videos = pgTable("videos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description"),
+  embedUrl: text("embed_url").notNull(), // YouTube/Vimeo embed URL
+  thumbnailUrl: text("thumbnail_url"),
+  section: varchar("section").notNull().default("general"), // general, programs, events, home
+  isActive: boolean("is_active").default(true),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertVideoSchema = createInsertSchema(videos).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertVideo = z.infer<typeof insertVideoSchema>;
+export type Video = typeof videos.$inferSelect;
+
 export const siteSettings = pgTable("site_settings", {
   key: varchar("key").primaryKey(),
   value: text("value").notNull(),

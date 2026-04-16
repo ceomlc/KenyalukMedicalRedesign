@@ -49,6 +49,7 @@ import {
   Eye,
   Mail,
   ClipboardList,
+  Video,
 } from "lucide-react";
 
 interface AdminStats {
@@ -71,6 +72,7 @@ const NAV_ITEMS = [
   { key: "users", label: "Users", icon: UserCog },
   { key: "registrations", label: "Event Registrations", icon: ClipboardList },
   { key: "newsletter", label: "Newsletter", icon: Mail },
+  { key: "videos", label: "Videos", icon: Video },
 ];
 
 function DashboardSection() {
@@ -892,6 +894,152 @@ function NewsletterSection() {
   );
 }
 
+const VIDEO_SECTIONS = [
+  { value: "home", label: "Home Page" },
+  { value: "programs", label: "Programs Page" },
+  { value: "events", label: "Events Page" },
+  { value: "general", label: "General / Other" },
+];
+
+function VideosSection() {
+  const { toast } = useToast();
+  const [showForm, setShowForm] = useState(false);
+  const [editingVideo, setEditingVideo] = useState<any>(null);
+  const [form, setForm] = useState({ title: "", description: "", embedUrl: "", section: "general", displayOrder: "0" });
+
+  const { data: videoList = [], isLoading } = useQuery<any[]>({ queryKey: ["/api/admin/videos"] });
+
+  const resetForm = () => { setForm({ title: "", description: "", embedUrl: "", section: "general", displayOrder: "0" }); setEditingVideo(null); setShowForm(false); };
+
+  const saveMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (editingVideo) {
+        return apiRequest("PUT", `/api/admin/videos/${editingVideo.id}`, data);
+      }
+      return apiRequest("POST", "/api/admin/videos", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/videos"] });
+      toast({ title: editingVideo ? "Video updated" : "Video added" });
+      resetForm();
+    },
+    onError: () => toast({ title: "Failed to save video", variant: "destructive" }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/videos/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/videos"] });
+      toast({ title: "Video deleted" });
+    },
+    onError: () => toast({ title: "Failed to delete video", variant: "destructive" }),
+  });
+
+  const handleEdit = (v: any) => {
+    setEditingVideo(v);
+    setForm({ title: v.title, description: v.description || "", embedUrl: v.embedUrl, section: v.section, displayOrder: String(v.displayOrder ?? 0) });
+    setShowForm(true);
+  };
+
+  const handleSubmit = () => {
+    if (!form.title.trim() || !form.embedUrl.trim()) {
+      toast({ title: "Title and Embed URL are required", variant: "destructive" }); return;
+    }
+    saveMutation.mutate({ title: form.title, description: form.description, embedUrl: form.embedUrl, section: form.section, displayOrder: parseInt(form.displayOrder) || 0, isActive: true });
+  };
+
+  return (
+    <div className="space-y-6" data-testid="section-videos">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Videos</h2>
+        <Button onClick={() => { resetForm(); setShowForm(true); }} data-testid="button-add-video">
+          <Plus className="h-4 w-4 mr-2" /> Add Video
+        </Button>
+      </div>
+
+      <Dialog open={showForm} onOpenChange={(open) => { if (!open) resetForm(); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingVideo ? "Edit Video" : "Add Video"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <label className="text-sm font-medium">Title *</label>
+              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Annual Gala Highlights 2025" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description</label>
+              <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Optional description" rows={2} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Embed URL * <span className="text-xs text-muted-foreground">(YouTube or Vimeo embed URL)</span></label>
+              <Input value={form.embedUrl} onChange={(e) => setForm({ ...form, embedUrl: e.target.value })} placeholder="https://www.youtube.com/embed/VIDEO_ID" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Site Section</label>
+              <Select value={form.section} onValueChange={(v) => setForm({ ...form, section: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {VIDEO_SECTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Display Order</label>
+              <Input type="number" value={form.displayOrder} onChange={(e) => setForm({ ...form, displayOrder: e.target.value })} placeholder="0" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={resetForm}>Cancel</Button>
+            <Button onClick={handleSubmit} disabled={saveMutation.isPending}>{saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : (editingVideo ? "Save Changes" : "Add Video")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {isLoading ? (
+        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+      ) : (videoList as any[]).length === 0 ? (
+        <Card><CardContent className="py-12 text-center text-muted-foreground">No videos yet. Click "Add Video" to get started.</CardContent></Card>
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Section</TableHead>
+                <TableHead>Order</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(videoList as any[]).map((v: any) => (
+                <TableRow key={v.id} data-testid={`row-video-${v.id}`}>
+                  <TableCell>
+                    <div className="font-medium">{v.title}</div>
+                    {v.description && <div className="text-xs text-muted-foreground truncate max-w-xs">{v.description}</div>}
+                  </TableCell>
+                  <TableCell><Badge variant="outline">{VIDEO_SECTIONS.find((s) => s.value === v.section)?.label ?? v.section}</Badge></TableCell>
+                  <TableCell>{v.displayOrder}</TableCell>
+                  <TableCell><Badge variant={v.isActive ? "default" : "secondary"}>{v.isActive ? "Active" : "Hidden"}</Badge></TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(v)} data-testid={`button-edit-video-${v.id}`}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteMutation.mutate(v.id)} data-testid={`button-delete-video-${v.id}`}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
@@ -944,6 +1092,7 @@ export default function AdminPage() {
       case "users": return <UsersSection />;
       case "registrations": return <EventRegistrationsSection />;
       case "newsletter": return <NewsletterSection />;
+      case "videos": return <VideosSection />;
       default: return <DashboardSection />;
     }
   };
