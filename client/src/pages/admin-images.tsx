@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Upload,
   Trash2,
@@ -845,9 +853,46 @@ function AllImagesSection() {
   );
 }
 
+interface CloudinaryFolder {
+  name: string;
+  path: string;
+}
+
 export default function AdminImages() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const [showCreateFolder, setShowCreateFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+
+  const { data: foldersData, refetch: refetchFolders } = useQuery<{ folders: CloudinaryFolder[] }>({
+    queryKey: ["/api/images/folders"],
+    retry: false,
+  });
+
+  const customFolders: SiteSection[] = (foldersData?.folders ?? [])
+    .filter((f) => !SITE_SECTIONS.some((s) => s.folder === f.path))
+    .map((f) => ({
+      folder: f.path,
+      label: f.name,
+      description: `Custom folder: ${f.path}`,
+    }));
+
+  const createFolderMutation = useMutation({
+    mutationFn: async (folderName: string) => {
+      const res = await apiRequest("POST", "/api/admin/images/folder", { folder: folderName });
+      return res.json();
+    },
+    onSuccess: (_data, folderName) => {
+      toast({ title: "Folder created", description: `"${folderName}" is ready for uploads.` });
+      setShowCreateFolder(false);
+      setNewFolderName("");
+      refetchFolders();
+      queryClient.invalidateQueries({ queryKey: ["/api/images/folders"] });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to create folder", description: error.message, variant: "destructive" });
+    },
+  });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -912,7 +957,7 @@ export default function AdminImages() {
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
-            <div>
+            <div className="flex-1">
               <h1
                 className="font-headings font-bold text-3xl md:text-4xl"
                 data-testid="heading-image-manager"
@@ -923,7 +968,58 @@ export default function AdminImages() {
                 Upload and manage images across your website sections
               </p>
             </div>
+            <Button
+              onClick={() => setShowCreateFolder(true)}
+              data-testid="button-create-folder"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Folder
+            </Button>
           </div>
+
+          <Dialog open={showCreateFolder} onOpenChange={setShowCreateFolder}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Folder</DialogTitle>
+              </DialogHeader>
+              <div className="py-2">
+                <Label htmlFor="new-folder-name" className="text-sm font-medium mb-2 block">
+                  Folder Name
+                </Label>
+                <Input
+                  id="new-folder-name"
+                  placeholder="e.g. gala-2026"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newFolderName.trim()) {
+                      createFolderMutation.mutate(newFolderName.trim());
+                    }
+                  }}
+                  data-testid="input-new-folder-name"
+                />
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Use lowercase letters, numbers, and hyphens. The folder will be created in Cloudinary immediately.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => { setShowCreateFolder(false); setNewFolderName(""); }}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => createFolderMutation.mutate(newFolderName.trim())}
+                  disabled={!newFolderName.trim() || createFolderMutation.isPending}
+                  data-testid="button-confirm-create-folder"
+                >
+                  {createFolderMutation.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-2" />Creating...</>
+                  ) : (
+                    "Create Folder"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           <Card className="mb-8 mt-6 border-primary/30">
             <CardContent className="p-4">
@@ -946,6 +1042,9 @@ export default function AdminImages() {
 
           <div className="space-y-4">
             {SITE_SECTIONS.map((section) => (
+              <SectionManager key={section.folder} section={section} />
+            ))}
+            {customFolders.map((section) => (
               <SectionManager key={section.folder} section={section} />
             ))}
             <AllImagesSection />
